@@ -1,0 +1,225 @@
+/* ==========================================================
+   BookEasy : theme.css (style général unique, Bootstrap 5)
+   Charger après bootstrap.min.css.
+   Valeurs estimées depuis les maquettes : corriger uniquement
+   le bloc :root après mesure dans Figma.
+   ========================================================== */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* ---------- 1. Tokens ---------- */
+:root {
+  --be-teal: #0d8a7c;  --be-teal-dark: #0a6f64;  --be-teal-light: #e3f3f1;
+  --be-ink: #151d33;   --be-text: #3a4256;       --be-muted: #7a8296;
+  --be-border: #e4e7ec; --be-bg: #f4f5f7;        --be-surface: #fff;
+
+  /* 5 statuts de réservation (valeurs data.js) */
+  --be-active: #1d6fd6;    --be-active-bg: #e6f0fc;
+  --be-confirmee: #0d8a7c; --be-confirmee-bg: #e3f3f1;
+  --be-terminee: #5b6477;  --be-terminee-bg: #eceef2;
+  --be-annulee: #d6453d;   --be-annulee-bg: #fdeceb;
+  --be-liberee: #c77d0a;   --be-liberee-bg: #fdf3e0;
+
+  --be-warning-bg: #fdf1dc; --be-warning-text: #a8660a;
+  --be-radius: 8px; --be-radius-lg: 12px;
+  --be-shadow: 0 8px 24px rgba(21, 29, 51, .08);
+
+  --bs-primary: var(--be-teal); --bs-primary-rgb: 13, 138, 124;
+  --bs-body-bg: var(--be-bg); --bs-body-color: var(--be-text);
+  --bs-body-font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bs-body-font-size: .8125rem;
+  --bs-border-color: var(--be-border);
+  --bs-link-color: var(--be-teal); --bs-link-hover-color: var(--be-teal-dark);
+}
+
+/* ---------- 2. Base ---------- */
+body { -webkit-font-smoothing: antialiased; line-height: 1.5; }
+h1, h2, h3, h4 { color: var(--be-ink); font-weight: 700; letter-spacing: -.01em; }
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.25rem; font-weight: 600; }
+h3 { font-size: .9375rem; font-weight: 600; }
+a { text-decoration: none; font-weight: 500; }
+:focus-visible { outline: 2px solid var(--be-teal); outline-offset: 2px; }
+.be-container { max-width: 1120px; margin-inline: auto; padding-inline: 1rem; }
+.be-muted { color: var(--be-muted); }
+.be-small { font-size: .6875rem; color: var(--be-muted); }
+.be-section { padding: 1.5rem 0; }
+
+/* ---------- 3. Navbar + footer ---------- */
+.be-navbar { background: var(--be-surface); border-bottom: 1px solid var(--be-border); padding: .75rem 0; }
+.be-brand { display: inline-flex; align-items: center; gap: .6rem; font-weight: 600; font-size: 1.0625rem; color: var(--be-ink); }
+.be-brand-logo { width: 32px; height: 32px; border-radius: var(--be-radius); background: var(--be-teal); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center; }
+.be-navbar .nav-link { display: inline-flex; align-items: center; gap: .4rem; padding: .45rem .75rem;
+  border-radius: var(--be-radius); font-size: .75rem; font-weight: 500; color: var(--be-text); }
+.be-navbar .nav-link:hover { background: var(--be-bg); }
+.be-navbar .nav-link.active { background: var(--be-teal-light); color: var(--be-teal-dark); font-weight: 600; }
+.be-footer { padding: 1.5rem 0; text-align: center; font-size: .6875rem; color: var(--be-muted); }
+
+/* ---------- 4. Boutons ---------- */
+.btn { font-size: .75rem; font-weight: 600; border-radius: var(--be-radius); padding: .5rem 1rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: .4rem; }
+.btn-lg { font-size: .8125rem; padding: .7rem 1.25rem; }
+.btn-sm { padding: .35rem .75rem; }
+.btn-primary { --bs-btn-bg: var(--be-teal); --bs-btn-border-color: var(--be-teal); --bs-btn-color: #fff;
+  --bs-btn-hover-bg: var(--be-teal-dark); --bs-btn-hover-border-color: var(--be-teal-dark); --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--be-teal-dark); --bs-btn-active-border-color: var(--be-teal-dark);
+  --bs-btn-disabled-bg: var(--be-teal); --bs-btn-disabled-border-color: var(--be-teal); }
+.btn-outline-secondary { --bs-btn-bg: var(--be-surface); --bs-btn-color: var(--be-ink); --bs-btn-border-color: #d4d8e0;
+  --bs-btn-hover-bg: var(--be-bg); --bs-btn-hover-color: var(--be-ink); --bs-btn-hover-border-color: #d4d8e0; }
+.btn-outline-danger { --bs-btn-color: var(--be-annulee); --bs-btn-border-color: #f0c4c1;
+  --bs-btn-hover-bg: var(--be-annulee-bg); --bs-btn-hover-color: var(--be-annulee); --bs-btn-hover-border-color: #f0c4c1; }
+
+/* ---------- 5. Cartes ---------- */
+.card { background: var(--be-surface); border: 1px solid var(--be-border); border-radius: var(--be-radius-lg); }
+.card-body { padding: 1.5rem; }
+.be-divider { border: 0; border-top: 1px solid var(--be-border); margin: 1.25rem 0; }
+
+/* ---------- 6. Formulaires ---------- */
+.form-label { font-size: .75rem; font-weight: 600; color: var(--be-ink); margin-bottom: .375rem; }
+.form-control, .form-select { font-size: .8125rem; color: var(--be-ink); border: 1px solid var(--be-border);
+  border-radius: var(--be-radius); padding: .6rem .75rem; }
+.form-control::placeholder { color: #a3a9b8; }
+.form-control:focus, .form-select:focus { border-color: var(--be-teal); box-shadow: 0 0 0 3px rgba(13,138,124,.15); }
+.form-check-input:checked { background-color: var(--be-teal); border-color: var(--be-teal); }
+.form-switch .form-check-input { width: 2.25em; height: 1.25em; cursor: pointer; }
+.form-range::-webkit-slider-thumb { background: var(--be-teal); }
+.form-range::-moz-range-thumb { background: var(--be-teal); }
+
+/* Champ avec icône à gauche / action à droite / unité à droite */
+.be-field { position: relative; }
+.be-field > i:first-child { position: absolute; left: .75rem; top: 50%; transform: translateY(-50%); color: var(--be-muted); pointer-events: none; }
+.be-field .form-control { padding-left: 2.25rem; }
+.be-field .be-field-action { position: absolute; right: .75rem; top: 50%; transform: translateY(-50%); background: none; border: 0; color: var(--be-muted); }
+.be-unit-field { position: relative; }
+.be-unit-field .form-control { padding-right: 5.5rem; }
+.be-unit-field .be-unit { position: absolute; right: .875rem; top: 50%; transform: translateY(-50%); font-size: .75rem; color: var(--be-muted); pointer-events: none; }
+
+/* ---------- 7. Chips, onglets, badges, alertes ---------- */
+.be-chip { border: 1px solid var(--be-border); background: var(--be-surface); color: var(--be-text);
+  font-size: .75rem; font-weight: 500; padding: .4rem .875rem; border-radius: var(--be-radius); }
+.be-chip.active { background: var(--be-teal); border-color: var(--be-teal); color: #fff; }
+
+.be-tabs { display: flex; gap: .25rem; background: var(--be-surface); border: 1px solid var(--be-border);
+  border-radius: var(--be-radius-lg); padding: 0 1rem; overflow-x: auto; white-space: nowrap; }
+.be-tab { display: inline-flex; align-items: center; gap: .4rem; padding: 1rem .875rem; font-size: .75rem;
+  font-weight: 500; color: var(--be-text); border-bottom: 2px solid transparent; }
+.be-tab.active { color: var(--be-teal); border-bottom-color: var(--be-teal); font-weight: 600; }
+
+.be-badge { display: inline-flex; align-items: center; gap: .3rem; font-size: .6875rem; font-weight: 600;
+  padding: .2rem .55rem; border-radius: 999px; background: var(--be-terminee-bg); color: var(--be-text); }
+.be-badge-teal { background: var(--be-teal-light); color: var(--be-teal-dark); }
+.be-status-active    { background: var(--be-active-bg);    color: var(--be-active); }
+.be-status-confirmee { background: var(--be-confirmee-bg); color: var(--be-confirmee); }
+.be-status-terminee  { background: var(--be-terminee-bg);  color: var(--be-terminee); }
+.be-status-annulee   { background: var(--be-annulee-bg);   color: var(--be-annulee); }
+.be-status-liberee   { background: var(--be-liberee-bg);   color: var(--be-liberee); }
+
+.be-alert { display: flex; gap: .6rem; padding: .75rem 1rem; border-radius: var(--be-radius); font-size: .75rem; background: #eef0f4; }
+.be-alert-warning { background: var(--be-warning-bg); color: var(--be-warning-text); }
+.be-alert-danger  { background: var(--be-annulee-bg); color: var(--be-annulee); }   /* règle métier refusée (EF-6) */
+.be-alert-success { background: var(--be-confirmee-bg); color: var(--be-confirmee); }
+
+/* ---------- 8. Connexion ---------- */
+.be-login-page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; }
+.be-login-card { width: 100%; max-width: 440px; padding: 2rem; background: var(--be-surface); border-radius: var(--be-radius-lg); box-shadow: var(--be-shadow); }
+.be-login-card h1 { font-size: 1.375rem; text-align: center; }
+.be-or { display: flex; align-items: center; gap: .75rem; color: var(--be-muted); font-size: .6875rem; margin: 1.25rem 0; }
+.be-or::before, .be-or::after { content: ""; flex: 1; border-top: 1px solid var(--be-border); }
+
+/* ---------- 9. Salles, équipements, carte du campus (EF-2, EF-4) ---------- */
+.be-room-card { overflow: hidden; height: 100%; display: flex; flex-direction: column; }
+.be-room-media { position: relative; aspect-ratio: 4 / 3; background: var(--be-border); }
+.be-room-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.be-room-media .be-badge { position: absolute; top: .6rem; left: .6rem; background: var(--be-surface); color: var(--be-teal-dark); }
+.be-room-body { padding: 1rem; display: flex; flex-direction: column; gap: .35rem; flex: 1; }
+.be-room-footer { margin-top: auto; padding-top: .75rem; display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+
+.be-map { position: relative; min-height: 340px; background: #eef2ee; border-radius: var(--be-radius-lg); overflow: hidden; }
+.be-map-pin { position: absolute; transform: translate(-50%, -100%); background: var(--be-surface); border: 1px solid var(--be-border);
+  border-radius: 6px; box-shadow: var(--be-shadow); font-size: .6875rem; font-weight: 600; padding: .2rem .5rem; }
+.be-map-pin.libre { color: var(--be-teal); }
+.be-map-pin.occupee { color: var(--be-annulee); }
+.be-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: .35rem; background: var(--be-teal); }
+.be-dot.occupee { background: var(--be-annulee); }
+
+.pagination { --bs-pagination-font-size: .75rem; --bs-pagination-color: var(--be-text);
+  --bs-pagination-active-bg: var(--be-teal); --bs-pagination-active-border-color: var(--be-teal); gap: .25rem; }
+.page-link { border-radius: 6px !important; }
+
+/* ---------- 10. Date et créneau (EF-3) : popover, calendrier, créneaux ---------- */
+.be-popover { background: var(--be-surface); border: 1px solid var(--be-border); border-radius: var(--be-radius-lg);
+  box-shadow: var(--be-shadow); padding: 1rem; max-width: 640px; }
+.be-calendars { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.be-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.be-cal-day { border: 0; background: none; padding: .45rem 0; border-radius: 6px; font-size: .75rem; color: var(--be-ink); }
+.be-cal-day:hover { background: var(--be-bg); }
+.be-cal-day.today { font-weight: 700; color: var(--be-teal); }
+.be-cal-day.in-range { background: var(--be-teal-light); border-radius: 0; }
+.be-cal-day.selected { background: var(--be-teal); color: #fff; }
+.be-cal-day:disabled { color: #c3c8d4; cursor: not-allowed; background: none; }
+.be-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: .5rem; }
+.be-slot { border: 1px solid var(--be-border); background: var(--be-surface); border-radius: var(--be-radius);
+  padding: .45rem; font-size: .75rem; font-weight: 500; text-align: center; }
+.be-slot:hover { border-color: var(--be-teal); }
+.be-slot.selected { background: var(--be-teal); border-color: var(--be-teal); color: #fff; }
+.be-slot:disabled { background: var(--be-bg); color: #b4bac8; text-decoration: line-through; cursor: not-allowed; }
+
+/* Parcours de réservation (étapes) */
+.be-stepper { display: flex; gap: .5rem; align-items: center; font-size: .75rem; color: var(--be-muted); }
+.be-step { display: inline-flex; align-items: center; gap: .4rem; }
+.be-step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--be-border); color: var(--be-text);
+  display: inline-flex; align-items: center; justify-content: center; font-size: .6875rem; font-weight: 600; }
+.be-step.active { color: var(--be-ink); font-weight: 600; }
+.be-step.active .be-step-num, .be-step.done .be-step-num { background: var(--be-teal); color: #fff; }
+
+/* ---------- 11. Réservations, check-in QR, notifications (EF-5, 7, 8) ---------- */
+.be-booking { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; background: var(--be-surface);
+  border: 1px solid var(--be-border); border-radius: var(--be-radius-lg); }
+.be-booking + .be-booking { margin-top: .75rem; }
+.be-booking-main { flex: 1; min-width: 0; }
+.be-qr-box { width: 200px; height: 200px; margin: 0 auto; padding: .75rem; background: #fff; border: 1px solid var(--be-border); border-radius: var(--be-radius-lg); }
+.be-countdown { font-size: 1.5rem; font-weight: 700; color: var(--be-ink); text-align: center; }
+
+.be-notif { display: flex; gap: .75rem; padding: .875rem 1rem; border-bottom: 1px solid var(--be-border); }
+.be-notif.unread { background: var(--be-teal-light); }
+.be-notif-icon { width: 32px; height: 32px; border-radius: 50%; background: var(--be-bg); color: var(--be-teal);
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* ---------- 12. Gestionnaire et administration (EF-9, EF-10) ---------- */
+.be-stat { padding: 1.25rem; }
+.be-stat-value { font-size: 1.75rem; font-weight: 700; color: var(--be-ink); line-height: 1.1; }
+.be-stat-label { font-size: .75rem; color: var(--be-muted); }
+
+.table { --bs-table-bg: transparent; font-size: .75rem; margin: 0; }
+.table > thead th { font-size: .6875rem; font-weight: 600; color: var(--be-muted); background: var(--be-bg);
+  border-bottom: 1px solid var(--be-border); padding: .65rem 1rem; white-space: nowrap; }
+.table > tbody td { padding: .8rem 1rem; vertical-align: middle; border-color: var(--be-border); }
+.be-table-wrap { overflow-x: auto; border: 1px solid var(--be-border); border-radius: var(--be-radius-lg); background: var(--be-surface); }
+
+.be-admin-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 1.5rem; align-items: start; }
+.be-side-title { display: flex; align-items: center; gap: .5rem; font-weight: 600; color: var(--be-ink); margin-bottom: .75rem; }
+.be-side-title i { color: var(--be-teal); }
+.be-form-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 0; font-size: .6875rem; color: var(--be-muted); }
+
+/* ---------- 13. Modales et toasts ---------- */
+.modal-content { border: 0; border-radius: var(--be-radius-lg); box-shadow: var(--be-shadow); }
+.modal-header, .modal-footer { border-color: var(--be-border); }
+.modal-title { font-size: .9375rem; font-weight: 600; color: var(--be-ink); }
+.toast { border: 0; border-radius: var(--be-radius); box-shadow: var(--be-shadow); font-size: .75rem; }
+
+/* ---------- 14. Responsive (exigence : ordinateur, tablette, mobile) ---------- */
+@media (max-width: 991.98px) {
+  h1 { font-size: 1.5rem; }
+  .be-admin-layout { grid-template-columns: 1fr; }
+  .be-navbar .navbar-collapse { margin-top: .75rem; padding-top: .5rem; border-top: 1px solid var(--be-border); }
+}
+@media (max-width: 575.98px) {
+  h1 { font-size: 1.375rem; }
+  .card-body { padding: 1.125rem; }
+  .be-login-card { padding: 1.5rem 1.25rem; }
+  .be-calendars { grid-template-columns: 1fr; }
+  .be-booking { flex-direction: column; align-items: stretch; }
+  .be-form-footer { flex-direction: column; text-align: center; }
+  .be-form-footer .btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
