@@ -2,8 +2,8 @@
    BookEasy : navbar.js (navbar + footer partagés)
    Utilisation dans chaque page :
      <div id="navbar"></div> ... <div id="footer"></div>
-     <script src="js/navbar.js"></script>
-   Session attendue : localStorage.session = {"nom":"Louise Martin","role":"etudiant"}
+     <script src="js/auth.js"></script>
+     <script src="js/navbar.js"></script>      (auth.js toujours AVANT)
    Rôles : invite | etudiant | enseignant | gestionnaire | admin
    ========================================================== */
 (function () {
@@ -16,12 +16,7 @@
     { href: "admin-settings.html",   icone: "bi-sliders",        texte: "Paramètres",             roles: ["admin"] }
   ];
 
-  function lireSession() {
-    try { return JSON.parse(localStorage.getItem("session")) || { role: "invite" }; }
-    catch (e) { return { role: "invite" }; }
-  }
-
-  const session = lireSession();
+  const session = utilisateurCourant();
   const role = session.role || "invite";
   const pageCourante = location.pathname.split("/").pop() || "index.html";
 
@@ -70,8 +65,5 @@
   if (pied) pied.innerHTML = `<footer class="be-footer">© 2026 BookEasy · ECE</footer>`;
 
   const logout = document.getElementById("be-logout");
-  if (logout) logout.addEventListener("click", () => {
-    localStorage.removeItem("session");
-    location.href = "login.html";
-  });
+  if (logout) logout.addEventListener("click", deconnecter);
 })();

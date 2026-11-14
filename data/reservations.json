@@ -1,0 +1,8 @@
+[
+  { "id": 101, "userId": 1, "ressourceType": "salle",      "ressourceId": 1, "date": "2026-11-18", "debut": "14:00", "fin": "16:00", "statut": "active" },
+  { "id": 102, "userId": 1, "ressourceType": "salle",      "ressourceId": 2, "date": "2026-11-14", "debut": "10:00", "fin": "11:00", "statut": "confirmee" },
+  { "id": 103, "userId": 1, "ressourceType": "equipement", "ressourceId": 2, "date": "2026-11-10", "debut": "09:00", "fin": "10:00", "statut": "terminee" },
+  { "id": 104, "userId": 1, "ressourceType": "salle",      "ressourceId": 3, "date": "2026-11-12", "debut": "15:00", "fin": "16:00", "statut": "annulee" },
+  { "id": 105, "userId": 1, "ressourceType": "salle",      "ressourceId": 4, "date": "2026-11-11", "debut": "08:00", "fin": "10:00", "statut": "liberee" },
+  { "id": 106, "userId": 2, "ressourceType": "equipement", "ressourceId": 1, "date": "2026-11-19", "debut": "13:00", "fin": "15:00", "statut": "active", "enAttenteValidation": true }
+]

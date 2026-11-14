@@ -1,0 +1,9 @@
+{
+  "quotaHebdoHeures": 6,
+  "anticipationJours": 7,
+  "dureeMaxHeures": { "etudiant": 2, "enseignant": 4 },
+  "ouverture": { "debut": "08:00", "fin": "20:00" },
+  "checkin": { "ouvertureAvantMinutes": 10, "delaiAbsenceMinutes": 15 },
+  "sanctions": { "seuilAbsences": 3, "periodeJours": 30, "suspensionJours": 7 },
+  "statuts": ["active", "confirmee", "terminee", "annulee", "liberee"]
+}

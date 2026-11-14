@@ -1,0 +1,8 @@
+[
+  { "id": 1, "nom": "Salle TP 2406",     "campus": "Eiffel", "batiment": "Bâtiment A", "etage": 2, "type": "Salle de cours",   "capacite": 24, "equipements": ["prises", "écran", "tableau"], "image": "assets/salle-tp-2406.jpg", "bloquee": false },
+  { "id": 2, "nom": "Salle de Réunion",  "campus": "Eiffel", "batiment": "Bâtiment B", "etage": 1, "type": "Salle de réunion", "capacite": 8,  "equipements": ["prises", "écran"],            "image": "assets/salle-reunion.jpg", "bloquee": false },
+  { "id": 3, "nom": "Salle Projet 1102", "campus": "Eiffel", "batiment": "Bâtiment C", "etage": 1, "type": "Salle projet",     "capacite": 6,  "equipements": ["prises", "tableau"],          "image": "assets/salle-projet-1102.jpg", "bloquee": false },
+  { "id": 4, "nom": "Salle de Cours 3201","campus": "Eiffel", "batiment": "Bâtiment A", "etage": 3, "type": "Salle de cours",   "capacite": 40, "equipements": ["prises", "écran", "tableau"], "image": "assets/salle-cours-3201.jpg", "bloquee": false },
+  { "id": 5, "nom": "Salle Créatif",     "campus": "Lyon",   "batiment": "Bâtiment 1", "etage": 0, "type": "Salle projet",     "capacite": 10, "equipements": ["prises", "tableau"],          "image": "assets/salle-creatif.jpg", "bloquee": false },
+  { "id": 6, "nom": "Salle de Réunion B204","campus": "Lyon", "batiment": "Bâtiment 2", "etage": 2, "type": "Salle de réunion", "capacite": 12, "equipements": ["prises", "écran"],            "image": "assets/salle-b204.jpg", "bloquee": true }
+]

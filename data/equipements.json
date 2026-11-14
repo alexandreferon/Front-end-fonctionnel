@@ -1,0 +1,7 @@
+[
+  { "id": 1, "nom": "Casque VR Meta Quest 3",       "categorie": "Réalité virtuelle", "campus": "Eiffel", "sensible": true,  "disponible": true },
+  { "id": 2, "nom": "Kit de visioconférence",       "categorie": "Audiovisuel",       "campus": "Eiffel", "sensible": false, "disponible": true },
+  { "id": 3, "nom": "Ordinateur portable",          "categorie": "Informatique",      "campus": "Lyon",   "sensible": false, "disponible": false },
+  { "id": 4, "nom": "Caméra 4K",                    "categorie": "Audiovisuel",       "campus": "Eiffel", "sensible": true,  "disponible": true },
+  { "id": 5, "nom": "Vidéoprojecteur portable",     "categorie": "Audiovisuel",       "campus": "Lyon",   "sensible": false, "disponible": true }
+]

@@ -1,0 +1,6 @@
+[
+  { "id": 1, "nom": "Louise Martin",  "email": "louise.martin@ece.fr",  "motDePasse": "ece2026", "role": "etudiant",     "campus": "Eiffel" },
+  { "id": 2, "nom": "Marc Lefebvre",  "email": "marc.lefebvre@ece.fr",  "motDePasse": "ece2026", "role": "enseignant",   "campus": "Eiffel" },
+  { "id": 3, "nom": "Sofia Benali",   "email": "sofia.benali@ece.fr",   "motDePasse": "ece2026", "role": "gestionnaire", "campus": "Lyon" },
+  { "id": 4, "nom": "Claire Dupont",  "email": "claire.dupont@ece.fr",  "motDePasse": "ece2026", "role": "admin",        "campus": "Eiffel" }
+]

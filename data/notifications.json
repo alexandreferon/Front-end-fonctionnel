@@ -1,0 +1,7 @@
+[
+  { "id": 1, "userId": 1, "type": "reservation_validee", "message": "Votre réservation de la Salle TP 2406 est confirmée.", "date": "2026-11-13 09:12", "lue": false },
+  { "id": 2, "userId": 1, "type": "rappel",              "message": "Rappel : votre créneau commence dans une heure.",      "date": "2026-11-14 09:00", "lue": false },
+  { "id": 3, "userId": 1, "type": "absence",             "message": "Absence enregistrée : le créneau a été libéré.",        "date": "2026-11-11 08:15", "lue": true },
+  { "id": 4, "userId": 1, "type": "annulation",          "message": "Réservation annulée (maintenance). Créneaux alternatifs proposés.", "date": "2026-11-12 11:30", "lue": true },
+  { "id": 5, "userId": 2, "type": "materiel",            "message": "Votre demande de casque VR est en attente de validation.", "date": "2026-11-13 16:40", "lue": false }
+]
