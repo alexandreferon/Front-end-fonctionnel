@@ -223,3 +223,10 @@ a { text-decoration: none; font-weight: 500; }
   .be-form-footer .btn { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------- Ajouts : bouton sombre, lien d'annulation, colonne QR, pastille minuteur ---------- */
+.btn-dark { --bs-btn-bg: var(--be-ink); --bs-btn-border-color: var(--be-ink); --bs-btn-hover-bg: #000; --bs-btn-hover-border-color: #000; --bs-btn-color: #fff; }
+.be-link-danger { color: var(--be-annulee); background: none; border: 0; font-size: .75rem; font-weight: 500; padding: .35rem .5rem; }
+.be-qr-col { text-align: center; padding-left: 1.5rem; border-left: 1px solid var(--be-border); min-width: 170px; }
+.be-timer { display: inline-flex; align-items: center; gap: .4rem; background: var(--be-liberee-bg); color: var(--be-liberee); font-weight: 600; font-size: .75rem; padding: .3rem .75rem; border-radius: 999px; }
+@media (max-width: 575.98px) { .be-qr-col { border-left: 0; border-top: 1px solid var(--be-border); padding: 1rem 0 0; } }

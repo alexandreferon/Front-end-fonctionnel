@@ -1,8 +1,10 @@
 [
-  { "id": 101, "userId": 1, "ressourceType": "salle",      "ressourceId": 1, "date": "2026-11-18", "debut": "14:00", "fin": "16:00", "statut": "active" },
-  { "id": 102, "userId": 1, "ressourceType": "salle",      "ressourceId": 2, "date": "2026-11-14", "debut": "10:00", "fin": "11:00", "statut": "confirmee" },
-  { "id": 103, "userId": 1, "ressourceType": "equipement", "ressourceId": 2, "date": "2026-11-10", "debut": "09:00", "fin": "10:00", "statut": "terminee" },
-  { "id": 104, "userId": 1, "ressourceType": "salle",      "ressourceId": 3, "date": "2026-11-12", "debut": "15:00", "fin": "16:00", "statut": "annulee" },
-  { "id": 105, "userId": 1, "ressourceType": "salle",      "ressourceId": 4, "date": "2026-11-11", "debut": "08:00", "fin": "10:00", "statut": "liberee" },
-  { "id": 106, "userId": 2, "ressourceType": "equipement", "ressourceId": 1, "date": "2026-11-19", "debut": "13:00", "fin": "15:00", "statut": "active", "enAttenteValidation": true }
+  { "id": 101, "userId": 1, "ressourceType": "salle",      "ressourceId": 1, "date": "2026-11-18", "debut": "14:00", "fin": "16:00", "statut": "active",    "qrCode": "BE-261118-A7K2" },
+  { "id": 107, "userId": 1, "ressourceType": "salle",      "ressourceId": 2, "date": "2026-11-19", "debut": "10:00", "fin": "11:30", "statut": "active",    "qrCode": "BE-261119-M4P8" },
+  { "id": 108, "userId": 1, "ressourceType": "equipement", "ressourceId": 5, "date": "2026-11-23", "debut": "10:00", "fin": "12:00", "statut": "confirmee", "qrCode": "BE-261123-R9T3" },
+  { "id": 102, "userId": 1, "ressourceType": "salle",      "ressourceId": 2, "date": "2026-11-14", "debut": "10:00", "fin": "11:00", "statut": "confirmee", "qrCode": "BE-261114-C2D5" },
+  { "id": 103, "userId": 1, "ressourceType": "equipement", "ressourceId": 2, "date": "2026-11-10", "debut": "09:00", "fin": "10:00", "statut": "terminee",  "qrCode": "BE-261110-F6H1" },
+  { "id": 104, "userId": 1, "ressourceType": "salle",      "ressourceId": 3, "date": "2026-11-12", "debut": "15:00", "fin": "16:00", "statut": "annulee",   "qrCode": "BE-261112-K3L7" },
+  { "id": 105, "userId": 1, "ressourceType": "salle",      "ressourceId": 4, "date": "2026-11-11", "debut": "08:00", "fin": "10:00", "statut": "liberee",   "qrCode": "BE-261111-N8Q4" },
+  { "id": 106, "userId": 2, "ressourceType": "equipement", "ressourceId": 1, "date": "2026-11-19", "debut": "13:00", "fin": "15:00", "statut": "active",    "qrCode": "BE-261119-V5W9", "enAttenteValidation": true }
 ]
