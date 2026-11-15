@@ -12,8 +12,8 @@
     { href: "reserver-salle.html",   icone: "bi-building",       texte: "Réserver une salle",     roles: ["invite", "etudiant", "enseignant", "gestionnaire", "admin"] },
     { href: "equipements.html",      icone: "bi-display",        texte: "Trouver un équipement",  roles: ["invite", "etudiant", "enseignant", "gestionnaire", "admin"] },
     { href: "mes-reservations.html", icone: "bi-calendar3",      texte: "Mes réservations",       roles: ["etudiant", "enseignant", "gestionnaire", "admin"] },
-    { href: "admin-dashboard.html",  icone: "bi-grid-1x2",       texte: "Dashboard Admin",        roles: ["gestionnaire", "admin"] },
-    { href: "admin-settings.html",   icone: "bi-sliders",        texte: "Paramètres",             roles: ["admin"] }
+    { href: "admin-dashboard.html", icone: "bi-grid-1x2",        texte: "Dashboard Admin" , roles: ["admin"] },
+    { href: "dashboard-gestion.html", icone: "bi-grid-1x2",        texte: "Dashboard Gestion" , roles: ["gestionnaire"] }
   ];
 
   const session = utilisateurCourant();
@@ -24,7 +24,7 @@
     <li class="nav-item">
       <a class="nav-link ${l.href === pageCourante ? "active" : ""}" href="${l.href}"
          ${l.href === pageCourante ? 'aria-current="page"' : ""}>
-        <i class="bi ${l.icone}"></i>${l.texte}
+        <i class="bi ${l.icone}"></i>${typeof l.texte === "function" ? l.texte(role) : l.texte}
       </a>
     </li>`).join("");
 

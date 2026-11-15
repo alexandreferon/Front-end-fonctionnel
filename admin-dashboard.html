@@ -171,12 +171,6 @@
         dashboardLink.href = "dashboard-gestion.html";
         dashboardLink.innerHTML = '<i class="bi bi-grid-1x2"></i>Dashboard Gestion';
       }
-      if (dashboardLink && utilisateur.role === "admin") {
-        const gestionItem = document.createElement("li");
-        gestionItem.className = "nav-item";
-        gestionItem.innerHTML = '<a class="nav-link" href="dashboard-gestion.html"><i class="bi bi-grid-1x2"></i>Dashboard Gestion</a>';
-        dashboardLink.parentElement.after(gestionItem);
-      }
 
       function showAccess() {
         $("access-card").classList.remove("d-none");
