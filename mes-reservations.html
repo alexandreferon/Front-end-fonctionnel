@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BookEasy · Trouver un équipement</title>
+  <title>BookEasy · Mes réservations</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link href="css/theme.css" rel="stylesheet">
@@ -12,142 +12,220 @@
   <div id="navbar"></div>
 
   <main class="be-container be-section">
-    <p class="be-small mb-2">Espace matériel · Prêt sur campus</p>
-    <h1>Emprunter du matériel &amp; équipements</h1>
-    <p class="be-muted">Du vidéoprojecteur au casque VR : réservez le matériel dont vous avez besoin, retirez-le sur votre campus.</p>
-
-    <div class="d-flex gap-2 mb-4">
-      <div class="be-field flex-grow-1"><i class="bi bi-search"></i>
-        <input id="q" class="form-control" placeholder="Rechercher un équipement, une marque…" aria-label="Rechercher"></div>
-      <button class="btn btn-primary" id="btnRecherche">Rechercher</button>
-      <span class="be-badge align-self-center d-none d-md-inline-flex" id="compteur"></span>
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+      <div>
+        <h1>Mes réservations en cours et passées</h1>
+        <p class="be-muted mb-0">Retrouvez vos salles et équipements, gérez vos créneaux et préparez votre venue.</p>
+      </div>
+      <a class="btn btn-dark" href="reserver-salle.html"><i class="bi bi-plus-lg"></i>Nouvelle réservation</a>
     </div>
 
-    <div class="row g-3">
-      <aside class="col-lg-3">
-        <div class="card"><div class="card-body">
-          <h3 class="mb-3">Filtres</h3>
-          <span class="form-label d-block">Catégorie</span>
-          <div class="d-grid gap-1 mb-3" id="categories"></div>
+    <div id="confirmation"></div>
 
-          <label class="form-label" for="campus">Campus de retrait</label>
-          <select id="campus" class="form-select mb-3"><option value="">Tous les campus</option><option>Eiffel</option><option>Lyon</option></select>
+    <div class="be-tabs mb-3" role="tablist">
+      <a class="be-tab active" href="#" data-onglet="avenir">À venir <span class="be-badge be-badge-teal" id="n-avenir">0</span></a>
+      <a class="be-tab" href="#" data-onglet="encours">En cours <span class="be-badge" id="n-encours">0</span></a>
+      <a class="be-tab" href="#" data-onglet="historique">Historique <span class="be-badge" id="n-historique">0</span></a>
+      <span class="ms-auto align-self-center be-small d-none d-md-inline" id="tri-info">De la plus proche à la plus lointaine</span>
+    </div>
 
-          <label class="form-label" for="dateDispo">Disponibilité</label>
-          <input id="dateDispo" type="date" class="form-control mb-3">
+    <div id="liste"></div>
 
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="sensible" checked>
-            <label class="form-check-label" for="sensible">Inclure le matériel sensible</label>
-          </div>
-          <button class="btn btn-primary w-100 mb-2" id="appliquer">Appliquer les filtres</button>
-          <button class="btn btn-link w-100" id="reinit">Réinitialiser</button>
-        </div></div>
-      </aside>
-
-      <section class="col-lg-9">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="mb-0 fs-5">Le matériel du campus <span class="be-small" id="compteur2"></span></h2>
-          <div class="d-flex align-items-center gap-2"><label class="be-small" for="tri">Trier par</label>
-            <select id="tri" class="form-select form-select-sm w-auto"><option value="dispo">Disponibilité</option><option value="nom">Nom</option></select></div>
-        </div>
-        <div class="row g-3" id="grille"></div>
-        <div class="be-alert be-alert-info mt-3"><i class="bi bi-info-circle"></i>Le matériel sensible (casque VR, caméra…) nécessite la validation d’un gestionnaire.</div>
-      </section>
+    <div class="be-booking mt-3">
+      <i class="bi bi-info-circle text-success"></i>
+      <div class="be-booking-main">
+        <strong class="text-dark">Un changement de programme ?</strong>
+        <div class="be-small">Pensez à annuler votre réservation pour libérer la salle ou l’équipement pour les autres étudiants.</div>
+      </div>
+      <a href="#">Contacter le support</a>
     </div>
   </main>
 
   <div id="footer"></div>
 
-  <!-- Modale de réservation -->
-  <div class="modal fade" id="modalResa" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-      <div class="modal-header"><h2 class="modal-title" id="resaTitre"></h2><button class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button></div>
-      <div class="modal-body">
-        <div class="mb-3"><label class="form-label" for="rDate">Date</label><input id="rDate" type="date" class="form-control"></div>
-        <div class="row g-2 mb-3">
-          <div class="col"><label class="form-label" for="rDebut">Début</label><input id="rDebut" type="time" class="form-control" value="10:00"></div>
-          <div class="col"><label class="form-label" for="rFin">Fin</label><input id="rFin" type="time" class="form-control" value="11:00"></div>
+  <!-- Modale Check-in QR (EF-7) -->
+  <div class="modal fade" id="modalCheckin" tabindex="-1" aria-labelledby="ciTitre" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content p-2">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <h2 class="modal-title fs-5" id="ciTitre">Validation de présence</h2>
+            <div class="be-small">Scannez le QR code ou utilisez les boutons ci-dessous pour confirmer votre arrivée.</div>
+          </div>
+          <button class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
-        <div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="rSalle"><label class="form-check-label" for="rSalle">Associer à une réservation de salle</label></div>
-        <div id="resaInfo" class="be-alert be-alert-warning d-none"></div>
-        <div id="resaErreur" class="be-alert be-alert-danger d-none"></div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-lg-8">
+              <div class="card h-100"><div class="card-body text-center">
+                <div class="d-flex justify-content-between align-items-center mb-3 text-start">
+                  <h3 class="mb-0">Votre code de présence</h3>
+                  <span class="be-badge be-status-confirmee" id="ciBadge">En attente de validation</span>
+                </div>
+                <span class="be-timer mb-3"><i class="bi bi-stopwatch"></i><span id="ciTemps">15 min restantes</span></span>
+                <div class="be-qr-box d-flex align-items-center justify-content-center my-3" id="ciQr"></div>
+                <div class="be-small">QR scannable de démonstration · Aucun check-in réel n’est effectué.</div>
+                <div id="ciErreur" class="be-alert be-alert-danger mt-3 d-none text-start"></div>
+                <div class="d-flex gap-2 justify-content-center mt-3">
+                  <button class="btn btn-primary" id="ciValider"><i class="bi bi-check-lg"></i>Valider mon check-in</button>
+                  <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                </div>
+              </div></div>
+            </div>
+            <div class="col-lg-4 d-flex flex-column gap-3">
+              <div class="card"><div class="card-body">
+                <h3>Votre créneau</h3>
+                <dl class="mb-2 small" id="ciInfos"></dl>
+              </div></div>
+              <div class="card"><div class="card-body">
+                <h3>Ne perdez pas votre créneau</h3>
+                <div class="d-flex gap-3 mb-2"><span class="be-badge" id="ciH1"></span><div><strong class="text-dark">Début de la réservation</strong><div class="be-small">Votre salle est prête à vous accueillir.</div></div></div>
+                <div class="d-flex gap-3"><span class="be-badge" id="ciH2"></span><div><strong class="text-dark">Libération sans check-in</strong><div class="be-small">La ressource sera proposée à d’autres étudiants.</div></div></div>
+              </div></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="modal-footer"><button class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button><button class="btn btn-primary" id="resaOk">Confirmer</button></div>
-    </div></div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="js/auth.js"></script>
+  <script>
+    // Session de démo tant que login.html n’existe pas (à retirer ensuite)
+    if (!estConnecte()) connecter("louise.martin@ece.fr", "ece2026");
+    exigerRole(["etudiant", "enseignant", "gestionnaire", "admin"]);
+  </script>
   <script src="js/navbar.js"></script>
   <script src="js/rules.js"></script>
   <script>
-    const ICONES = { "Réalité virtuelle": "bi-headset-vr", "Audiovisuel": "bi-projector", "Informatique": "bi-laptop" };
-    let equipements = [], categorie = "", choisi;
-    const $ = id => document.getElementById(id);
-    const modal = new bootstrap.Modal($("modalResa"));
+    const user = utilisateurCourant();
+    let reservations = [], salles = [], equipements = [], cfg, onglet = "avenir", minuteur, reservationCI;
+
+    const ICONES = { "Salle de réunion": "bi-people", "Salle projet": "bi-people", equipement: "bi-projector" };
+
+    function ressource(r) {
+      if (r.ressourceType === "equipement") {
+        const e = equipements.find(x => x.id === r.ressourceId);
+        return { nom: e.nom, sous: "Équipement · Retrait sur place", icone: ICONES.equipement, campus: "Campus " + e.campus, lieu: "Accueil, bâtiment principal" };
+      }
+      const s = salles.find(x => x.id === r.ressourceId);
+      return { nom: s.nom, sous: `${s.type} · ${s.capacite} places`, icone: ICONES[s.type] || "bi-display", campus: "Campus " + s.campus, lieu: `${s.batiment}, étage ${s.etage}` };
+    }
 
     function filtrer() {
-      const q = $("q").value.trim().toLowerCase();
-      return equipements.filter(e =>
-        (!categorie || e.categorie === categorie) &&
-        (!$("campus").value || e.campus === $("campus").value) &&
-        ($("sensible").checked || !e.sensible) &&
-        (!q || (e.nom + e.categorie).toLowerCase().includes(q)))
-        .sort((a, b) => $("tri").value === "nom" ? a.nom.localeCompare(b.nom) : b.disponible - a.disponible);
+      const auj = aujourdhui(), miennes = reservations.filter(r => r.userId === user.id);
+      return {
+        avenir: miennes.filter(r => estActive(r) && r.date > auj).sort((a, b) => (a.date + a.debut).localeCompare(b.date + b.debut)),
+        encours: miennes.filter(r => estActive(r) && r.date === auj),
+        historique: miennes.filter(r => !estActive(r) || r.date < auj).sort((a, b) => (b.date + b.debut).localeCompare(a.date + a.debut))
+      };
     }
 
     function afficher() {
-      const liste = filtrer(), cats = [...new Set(equipements.map(e => e.categorie))];
-      $("categories").innerHTML = [["", "Tous les équipements"], ...cats.map(c => [c, c])].map(([v, t]) =>
-        `<button class="be-chip text-start ${categorie === v ? "active" : ""}" data-cat="${v}">${t}</button>`).join("");
-      $("compteur").textContent = $("compteur2").textContent = `${liste.length} équipement${liste.length > 1 ? "s" : ""}`;
-      $("grille").innerHTML = liste.length ? liste.map(e => `
-        <div class="col-md-6 col-xl-4"><article class="card be-room-card">
-          <div class="be-room-media d-flex align-items-center justify-content-center text-secondary" style="font-size:3rem">
-            <i class="bi ${ICONES[e.categorie] || "bi-box"}"></i>
-            <img src="${e.image}" alt="${e.nom}" style="position:absolute;inset:0" onerror="this.remove()">
-            <span class="be-badge ${e.disponible ? "be-badge-teal" : "be-status-liberee"}">${e.disponible ? "Disponible" : "En prêt"}</span></div>
-          <div class="be-room-body">
-            <span class="be-small text-uppercase">${e.categorie}</span><h3 class="mb-0">${e.nom}</h3>
-            <span class="be-small">Réf. EQ-${String(e.id).padStart(3, "0")} · Campus ${e.campus}</span>
-            ${e.sensible ? `<span class="be-badge be-status-active align-self-start mt-1"><i class="bi bi-shield-check"></i>Validation requise</span>` : ""}
-            <div class="be-room-footer"><button class="btn btn-primary w-100" data-id="${e.id}" ${e.disponible ? "" : "disabled"}>Réserver cet équipement</button></div>
-          </div></article></div>`).join("")
-        : `<div class="col-12"><div class="card"><div class="card-body text-center be-muted">Aucun équipement ne correspond à votre recherche.</div></div></div>`;
+      const groupes = filtrer();
+      Object.keys(groupes).forEach(k => document.getElementById("n-" + k).textContent = groupes[k].length);
+      document.getElementById("tri-info").textContent = onglet === "historique" ? "De la plus récente à la plus ancienne" : "De la plus proche à la plus lointaine";
+      const liste = groupes[onglet];
+      document.getElementById("liste").innerHTML = liste.length ? liste.map(carte).join("")
+        : `<div class="card"><div class="card-body text-center be-muted">Aucune réservation dans cette rubrique.</div></div>`;
+      document.querySelectorAll("[data-qr]").forEach(el => new QRCode(el, { text: el.dataset.qr, width: 96, height: 96 }));
     }
 
-    /* Filtres */
-    $("categories").addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (b) { categorie = b.dataset.cat; afficher(); } });
-    ["btnRecherche", "appliquer"].forEach(id => $(id).addEventListener("click", afficher));
-    $("q").addEventListener("input", afficher); $("tri").addEventListener("change", afficher);
-    $("campus").addEventListener("change", afficher); $("sensible").addEventListener("change", afficher);
-    $("reinit").addEventListener("click", () => { $("q").value = ""; $("campus").value = ""; $("dateDispo").value = ""; $("sensible").checked = true; categorie = ""; afficher(); });
+    function carte(r) {
+      const x = ressource(r), modifiable = r.statut === "active" || r.statut === "confirmee";
+      return `
+      <article class="be-booking">
+        <div class="be-booking-main">
+          <div class="d-flex justify-content-between align-items-start gap-2">
+            <div class="d-flex gap-3"><i class="bi ${x.icone} fs-5 text-secondary"></i>
+              <div><h3 class="mb-0">${x.nom}</h3><span class="be-small">${x.sous}</span></div></div>
+            <span class="be-badge be-status-${r.statut}">${r.enAttenteValidation ? "En attente de validation" : LIBELLES_STATUT[r.statut]}</span>
+          </div>
+          <div class="row g-3 mt-1">
+            <div class="col-sm-4"><div class="be-small"><i class="bi bi-calendar3"></i> DATE</div><strong class="text-dark">${formatDate(r.date)}</strong></div>
+            <div class="col-sm-4"><div class="be-small"><i class="bi bi-clock"></i> CRÉNEAU HORAIRE</div><strong class="text-dark">${r.debut} – ${r.fin}</strong><div class="be-small">${formatDuree(r)}</div></div>
+            <div class="col-sm-4"><div class="be-small"><i class="bi bi-geo-alt"></i> CAMPUS</div><strong class="text-dark">${x.campus}</strong><div class="be-small">${x.lieu}</div></div>
+          </div>
+          ${modifiable ? `<div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+            <button class="btn btn-outline-secondary btn-sm" data-act="modifier" data-id="${r.id}"><i class="bi bi-pencil"></i>Modifier</button>
+            <button class="be-link-danger" data-act="annuler" data-id="${r.id}">Annuler la réservation</button>
+            ${r.statut === "active" && !r.enAttenteValidation ? `<button class="btn btn-primary btn-sm ms-auto" data-act="checkin" data-id="${r.id}"><i class="bi bi-qr-code-scan"></i>Check-in</button>` : ""}
+          </div>` : ""}
+        </div>
+        <div class="be-qr-col">
+          <div class="be-small fw-semibold text-dark mb-2">QR Code de confirmation</div>
+          <div class="d-inline-block" data-qr="${r.qrCode}"></div>
+          <div class="be-small fw-semibold text-dark mt-1">${r.qrCode}</div>
+          <div class="be-small">À présenter à votre arrivée</div>
+        </div>
+      </article>`;
+    }
 
-    /* Réservation (EF-4 + règles EF-6) */
-    $("grille").addEventListener("click", e => {
-      const b = e.target.closest("[data-id]"); if (!b) return;
-      if (!estConnecte()) { location.href = "login.html"; return; }
-      choisi = equipements.find(x => x.id === +b.dataset.id);
-      $("resaTitre").textContent = choisi.nom;
-      $("rDate").value = $("dateDispo").value || aujourdhui();
-      $("resaErreur").classList.add("d-none");
-      $("resaInfo").classList.toggle("d-none", !choisi.sensible);
-      $("resaInfo").textContent = "Matériel sensible : votre demande sera soumise à la validation d’un gestionnaire.";
+    /* ----- Actions ----- */
+    document.getElementById("liste").addEventListener("click", e => {
+      const b = e.target.closest("[data-act]"); if (!b) return;
+      const r = reservations.find(x => x.id === +b.dataset.id);
+      if (b.dataset.act === "annuler" && confirm("Annuler cette réservation ?")) {
+        r.statut = "annulee"; sauverReservations(reservations); afficher();
+        afficherToast("Réservation annulée. Le créneau est de nouveau disponible.");
+      }
+      if (b.dataset.act === "modifier") afficherToast("Modification : à relier à la page Date et créneau.");
+      if (b.dataset.act === "checkin") ouvrirCheckin(r);
+    });
+
+    document.querySelectorAll("[data-onglet]").forEach(a => a.addEventListener("click", e => {
+      e.preventDefault(); onglet = a.dataset.onglet;
+      document.querySelectorAll(".be-tab").forEach(t => t.classList.toggle("active", t === a)); afficher();
+    }));
+
+    /* ----- Check-in (EF-7) ----- */
+    const modal = new bootstrap.Modal(document.getElementById("modalCheckin"));
+    function ouvrirCheckin(r) {
+      reservationCI = r; const x = ressource(r);
+      document.getElementById("ciQr").innerHTML = ""; new QRCode(document.getElementById("ciQr"), { text: r.qrCode, width: 160, height: 160 });
+      document.getElementById("ciInfos").innerHTML = [["Salle", `${x.nom} · ${x.campus}`], ["Date", formatDate(r.date)], ["Créneau", `${r.debut} – ${r.fin} · ${formatDuree(r)}`], ["Réservé par", `${user.nom} · ${user.role}`]]
+        .map(([k, v]) => `<dt class="be-small fw-normal mb-0">${k}</dt><dd class="text-dark fw-semibold">${v}</dd>`).join("");
+      const fin = debutCreneau(r).getTime() + cfg.checkin.delaiAbsenceMinutes * 60000;
+      document.getElementById("ciH1").textContent = r.debut;
+      document.getElementById("ciH2").textContent = new Date(fin).toTimeString().slice(0, 5);
+      document.getElementById("ciErreur").classList.add("d-none");
+      document.getElementById("ciBadge").textContent = "En attente de validation";
+      let reste = Math.max(0, Math.round((fin - maintenantPour(r)) / 1000));
+      clearInterval(minuteur);
+      const tick = () => { document.getElementById("ciTemps").textContent = reste > 0 ? `${Math.floor(reste / 60)} min ${String(reste % 60).padStart(2, "0")} s restantes` : "Fenêtre expirée"; reste = Math.max(0, reste - 1); };
+      tick(); minuteur = setInterval(tick, 1000);
       modal.show();
+    }
+    document.getElementById("modalCheckin").addEventListener("hidden.bs.modal", () => clearInterval(minuteur));
+
+    document.getElementById("ciValider").addEventListener("click", () => {
+      const etat = etatCheckin(reservationCI, cfg), err = document.getElementById("ciErreur");
+      if (etat !== "ouvert") {
+        err.textContent = etat === "trop_tot" ? `Le check-in ouvre ${cfg.checkin.ouvertureAvantMinutes} minutes avant le début du créneau.` : "La fenêtre de check-in est dépassée : la ressource a été libérée.";
+        err.classList.remove("d-none"); return;
+      }
+      reservationCI.statut = "confirmee"; sauverReservations(reservations);
+      modal.hide(); afficher(); afficherToast("Présence confirmée. Bonne séance !");
     });
 
-    $("resaOk").addEventListener("click", async () => {
-      const demande = { ressourceType: "equipement", ressourceId: choisi.id, date: $("rDate").value, debut: $("rDebut").value, fin: $("rFin").value };
-      const res = await ajouterReservation(demande, utilisateurCourant(), choisi.sensible);
-      if (!res.ok) { $("resaErreur").textContent = res.message; $("resaErreur").classList.remove("d-none"); return; }
-      modal.hide();
-      afficherToast(choisi.sensible ? "Demande envoyée au gestionnaire pour validation." : "Équipement réservé. Retrouvez-le dans Mes réservations.");
-    });
-
-    (async () => {
-      try { equipements = await chargerJSON("equipements"); afficher(); }
-      catch (e) { $("grille").innerHTML = `<div class="be-alert be-alert-danger">Impossible de charger les données (${e.message}). Ouvrez le site avec Live Server.</div>`; }
+    /* ----- Chargement ----- */
+    (async function () {
+      try {
+        [salles, equipements, cfg] = await Promise.all([chargerJSON("rooms"), chargerJSON("equipements"), chargerReglages()]);
+        reservations = await chargerReservations();
+        if (!MODE_DEMO && libererAbsences(reservations, cfg)) reservations = await chargerReservations();
+        afficher();
+        const id = new URLSearchParams(location.search).get("confirme"), r = reservations.find(x => x.id === +id);
+        if (r) {
+          const x = ressource(r);
+          document.getElementById("confirmation").innerHTML = `<div class="be-alert be-alert-success mb-3"><i class="bi bi-check-circle"></i>
+            <div><strong>Votre réservation est confirmée.</strong><div>${x.nom} · ${formatDate(r.date)} · ${r.debut} – ${r.fin}</div></div></div>`;
+        }
+      } catch (e) {
+        document.getElementById("liste").innerHTML = `<div class="be-alert be-alert-danger">Impossible de charger les données (${e.message}). Ouvrez le site avec Live Server, pas en double-cliquant sur le fichier.</div>`;
+      }
     })();
   </script>
 </body>
