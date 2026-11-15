@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5f7">
+  <title>BookEasy · Dashboard Gestion</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/Theme.css" rel="stylesheet">
+  <style>
+    .be-container { max-width:820px; }
+    .be-navbar .be-container { max-width:1120px; }
+    .be-section { padding:1.15rem 0 1.5rem; }
+    .dashboard-heading { margin:0 0 1rem; }
+    .dashboard-eyebrow { color:var(--be-muted); font-size:.58rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase; margin-bottom:.18rem; }
+    .dashboard-heading h1 { font-size:1.4rem; margin:0 0 .25rem; }
+    .dashboard-heading p { color:var(--be-muted); font-size:.66rem; margin:0; }
+    .dash-panel { background:#fff; border:1px solid var(--be-border); border-radius:9px; box-shadow:0 2px 7px rgba(21,29,51,.025); }
+    .dash-filterbar { min-height:42px; display:flex; align-items:center; justify-content:space-between; gap:.6rem; padding:.4rem .55rem; margin-bottom:.75rem; }
+    .campus-filters { display:flex; flex-wrap:wrap; align-items:center; gap:.3rem; }
+    .campus-label { color:var(--be-ink); font-size:.62rem; font-weight:600; padding:0 .25rem; }
+    .campus-filter { background:#fff; border:1px solid var(--be-border); color:var(--be-muted); border-radius:6px; padding:.3rem .55rem; font-size:.61rem; }
+    .campus-filter.active { color:var(--be-teal-dark); background:var(--be-teal-light); border-color:var(--be-teal); }
+    .dash-date { display:flex; align-items:center; justify-content:flex-end; gap:.55rem; color:var(--be-text); font-size:.6rem; white-space:nowrap; }
+    .dash-date small { color:var(--be-muted); font-size:.54rem; }
+    .stats-row { margin-bottom:.75rem; }
+    .stat-card { min-height:96px; height:100%; padding:.7rem .75rem; position:relative; }
+    .stat-label { display:block; color:var(--be-muted); font-size:.6rem; }
+    .stat-value { color:var(--be-ink); display:block; font-size:1.3rem; font-weight:700; line-height:1.15; margin-top:.3rem; }
+    .stat-caption { color:var(--be-muted); font-size:.54rem; line-height:1.35; margin-top:.3rem; }
+    .stat-chart-icon { position:absolute; right:.7rem; top:.65rem; width:25px; height:25px; }
+    .stat-chart-icon canvas { width:25px!important; height:25px!important; }
+    .dashboard-panel { margin-bottom:.75rem; padding:.7rem .75rem; }
+    .panel-head { display:flex; align-items:flex-start; justify-content:space-between; gap:.6rem; margin-bottom:.55rem; }
+    .panel-title { color:var(--be-ink); font-size:.77rem; font-weight:500; margin:0; }
+    .panel-subtitle { color:var(--be-muted); font-size:.57rem; margin:.15rem 0 0; }
+    .panel-meta { color:var(--be-muted); font-size:.55rem; white-space:nowrap; }
+    .request-table { min-width:650px; }
+    .request-table thead th { font-size:.52rem; text-transform:uppercase; letter-spacing:.025em; }
+    .request-table tbody td { font-size:.59rem; padding:.55rem .75rem; }
+    .request-name { color:var(--be-ink); font-weight:600; font-size:.6rem; }
+    .request-detail { color:var(--be-muted); font-size:.53rem; display:block; }
+    .request-actions { display:flex; gap:.3rem; }
+    .request-actions .btn { font-size:.58rem; padding:.27rem .45rem; }
+    .maintenance-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.55rem; }
+    .maintenance-item { display:flex; align-items:flex-start; gap:.5rem; background:#f5f7f8; border-radius:7px; padding:.6rem; min-width:0; }
+    .maintenance-icon { color:var(--be-muted); font-size:.78rem; padding-top:.05rem; }
+    .maintenance-main { flex:1; min-width:0; }
+    .maintenance-name { color:var(--be-ink); font-weight:600; font-size:.58rem; }
+    .maintenance-detail { color:var(--be-muted); font-size:.51rem; line-height:1.4; margin-top:.1rem; }
+    .maintenance-state { border-radius:20px; background:#e9edef; color:#697680; padding:.15rem .4rem; font-size:.5rem; white-space:nowrap; }
+    .notice-simulated { color:var(--be-muted); font-size:.54rem; margin:.55rem 0 0; }
+    .notice-simulated i { color:var(--be-teal); }
+    .requests-empty { text-align:center; color:var(--be-muted); padding:1rem; font-size:.63rem; }
+    .access-card { max-width:430px; margin:2rem auto; }
+    .calendar-layout { display:grid; grid-template-columns:minmax(180px,.8fr) minmax(0,1.2fr); gap:.8rem; }
+    .calendar-box { border:1px solid var(--be-border); border-radius:7px; padding:.55rem; }
+    .calendar-month { display:flex; align-items:center; justify-content:space-between; color:var(--be-ink); font-size:.62rem; font-weight:600; margin-bottom:.35rem; }
+    .calendar-month button { width:22px; height:22px; border:0; border-radius:5px; background:transparent; color:var(--be-muted); }
+    .calendar-month button:hover { background:var(--be-bg); color:var(--be-teal); }
+    .calendar-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:2px; text-align:center; }
+    .calendar-weekday { color:var(--be-muted); font-size:.5rem; padding:.15rem 0; }
+    .calendar-day { border:0; border-radius:50%; background:transparent; color:var(--be-text); font-size:.56rem; aspect-ratio:1; min-width:0; }
+    .calendar-day:hover:not(:disabled) { background:var(--be-teal-light); }
+    .calendar-day.selected { background:var(--be-teal); color:white; }
+    .calendar-day.today:not(.selected) { box-shadow:inset 0 0 0 1px var(--be-teal); }
+    .calendar-day.muted { color:#b7bec6; }
+    .calendar-day:disabled { color:#c6cbd1; cursor:not-allowed; }
+    .selected-date { color:var(--be-teal-dark); font-size:.57rem; font-weight:600; margin-top:.45rem; }
+    .modal-subtitle { color:var(--be-muted); font-size:.59rem; margin-top:.15rem; }
+    .modal-content { border-radius:12px; }
+    .modal-body { padding-top:.65rem; }
+    .modal .form-label { font-size:.59rem; margin-bottom:.25rem; }
+    .modal .form-select,.modal .form-control { font-size:.62rem; padding:.46rem .55rem; }
+    .sim-notice { border-radius:7px; background:var(--be-teal-light); color:var(--be-teal-dark); padding:.5rem .6rem; font-size:.56rem; line-height:1.4; }
+    .impact-warning { border-radius:7px; background:var(--be-warning-bg); color:var(--be-warning-text); padding:.5rem .6rem; font-size:.55rem; line-height:1.4; }
+    .modal-footnote { color:var(--be-muted); font-size:.53rem; }
+    .block-summary { color:var(--be-muted); font-size:.56rem; margin-right:auto; }
+    @media(max-width:767.98px){.dash-filterbar{align-items:flex-start;flex-direction:column}.dash-date{width:100%;justify-content:flex-start}.calendar-layout{grid-template-columns:1fr 1.2fr}}
+    @media(min-width:768px) and (max-width:991.98px){.be-navbar.navbar-expand-lg .navbar-toggler{display:none}.be-navbar.navbar-expand-lg .navbar-collapse{display:flex!important;flex-basis:auto;margin:0;padding:0;border:0}.be-navbar .navbar-nav{flex-direction:row;white-space:nowrap}.be-navbar .nav-link{font-size:.62rem;padding:.4rem .42rem;white-space:nowrap}.be-navbar .btn{font-size:.62rem;padding:.35rem .55rem;white-space:nowrap}.be-brand{font-size:.9rem}}
+    @media(max-width:575.98px){.be-section{padding-top:1rem}.dashboard-heading h1{font-size:1.2rem}.stat-card{min-height:90px;padding:.6rem}.stat-value{font-size:1.15rem}.stat-chart-icon{right:.5rem;top:.5rem}.maintenance-grid{grid-template-columns:1fr}.calendar-layout{grid-template-columns:1fr}.dash-filterbar{padding:.5rem}.modal-dialog{margin:.55rem}.modal-footer{gap:.4rem}.block-summary{flex-basis:100%}}
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+  <main class="be-container be-section">
+    <header class="dashboard-heading">
+      <div class="dashboard-eyebrow">Espace gestionnaire</div>
+      <h1 id="dashboard-title">Pilotez les ressources du campus</h1>
+      <p>Suivez les réservations, validez les demandes sensibles et organisez la maintenance.</p>
+    </header>
+
+    <section class="dash-panel dash-filterbar" id="dashboard-toolbar" aria-label="Filtres du dashboard">
+      <div class="campus-filters" role="group" aria-label="Filtrer par campus">
+        <span class="campus-label">Campus</span>
+        <button class="campus-filter active" type="button" data-campus="">Tous</button>
+        <button class="campus-filter" type="button" data-campus="Eiffel">Campus Eiffel</button>
+        <button class="campus-filter" type="button" data-campus="Lyon">Campus Lyon</button>
+      </div>
+      <div class="dash-date"><span><i class="bi bi-calendar3 me-1"></i><span id="date-today">Aujourd’hui</span></span><small id="updated-at">Mis à jour</small></div>
+    </section>
+
+    <section class="row g-2 stats-row" aria-label="Indicateurs clés">
+      <div class="col-6 col-xl-3"><article class="dash-panel stat-card"><span class="stat-label">Taux d’occupation</span><strong class="stat-value" id="stat-occupancy">—</strong><div class="stat-caption" id="stat-occupancy-note">Sur les salles disponibles · aujourd’hui</div><span class="stat-chart-icon"><canvas id="mini-occupancy" aria-label="Graphique d’occupation"></canvas></span></article></div>
+      <div class="col-6 col-xl-3"><article class="dash-panel stat-card"><span class="stat-label">No-show</span><strong class="stat-value" id="stat-noshow">—</strong><div class="stat-caption" id="stat-noshow-note">Réservations sans check-in</div><span class="stat-chart-icon"><canvas id="mini-noshow" aria-label="Graphique des no-show"></canvas></span></article></div>
+      <div class="col-6 col-xl-3"><article class="dash-panel stat-card"><span class="stat-label">Réservations du jour</span><strong class="stat-value" id="stat-today">—</strong><div class="stat-caption" id="stat-today-note">Salles · équipements</div><span class="stat-chart-icon"><canvas id="mini-bookings" aria-label="Graphique des réservations du jour"></canvas></span></article></div>
+      <div class="col-6 col-xl-3"><article class="dash-panel stat-card"><span class="stat-label">Demandes en attente</span><strong class="stat-value" id="stat-pending">—</strong><div class="stat-caption" id="stat-pending-note">Matériel sensible à valider</div><span class="stat-chart-icon"><canvas id="mini-pending" aria-label="Graphique des demandes en attente"></canvas></span></article></div>
+    </section>
+
+    <section class="dash-panel dashboard-panel" aria-labelledby="requests-title">
+      <div class="panel-head"><div><h2 class="panel-title" id="requests-title">Demandes d’équipement sensibles <span class="be-badge be-status-active ms-1" id="pending-count">0 en attente</span></h2><p class="panel-subtitle">Les équipements sensibles nécessitent une validation avant le retrait.</p></div><span class="panel-meta">Les plus anciennes en premier</span></div>
+      <div class="be-table-wrap"><table class="table align-middle mb-0 request-table"><thead><tr><th>Demandeur</th><th>Équipement</th><th>Créneau</th><th>Motif</th><th>Décision</th></tr></thead><tbody id="pending-rows"></tbody></table></div>
+      <p class="panel-meta mt-2 mb-0" id="pending-summary"></p>
+    </section>
+
+    <section class="dash-panel dashboard-panel" aria-labelledby="maintenance-title">
+      <div class="panel-head align-items-center"><div><h2 class="panel-title" id="maintenance-title">Maintenance des salles</h2><p class="panel-subtitle">Rendez une salle indisponible et informez les utilisateurs concernés.</p></div><button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalBlocage"><i class="bi bi-plus-lg"></i>Bloquer une salle</button></div>
+      <div class="maintenance-grid" id="maintenance-list"></div>
+      <p class="notice-simulated mb-0"><i class="bi bi-envelope me-1"></i>Les utilisateurs ayant une réservation sur un créneau bloqué sont ajoutés aux notifications simulées.</p>
+    </section>
+
+    <section class="card access-card d-none" id="access-card" aria-live="polite"><div class="card-body">
+      <h2 class="panel-title mb-2" id="access-title">Connexion requise</h2><p class="be-muted mb-3" id="access-message">Connectez-vous avec un compte gestionnaire ou administrateur.</p>
+      <form id="admin-login-form"><div class="mb-3"><label class="form-label" for="admin-email">Adresse e-mail</label><input class="form-control" id="admin-email" type="email" autocomplete="username" required></div><div class="mb-3"><label class="form-label" for="admin-password">Mot de passe</label><input class="form-control" id="admin-password" type="password" autocomplete="current-password" required></div><div class="be-alert be-alert-danger d-none mb-3" id="admin-login-error" role="alert"></div><button class="btn btn-primary w-100" type="submit">Se connecter</button></form>
+    </div></section>
+  </main>
+  <div id="footer"></div>
+
+  <div class="modal fade" id="modalBlocage" tabindex="-1" aria-labelledby="modalBlocageLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content">
+      <form id="block-form">
+        <div class="modal-header"><div><h2 class="modal-title" id="modalBlocageLabel">Bloquer une salle</h2><p class="modal-subtitle mb-0">Planifiez une indisponibilité pour maintenance et prévenez les utilisateurs.</p></div><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Fermer"></button></div>
+        <div class="modal-body">
+          <div class="calendar-layout">
+            <div>
+              <label class="form-label d-block">Date du blocage</label>
+              <div class="calendar-box"><div class="calendar-month"><button type="button" id="month-prev" aria-label="Mois précédent"><i class="bi bi-chevron-left"></i></button><span id="calendar-month-title"></span><button type="button" id="month-next" aria-label="Mois suivant"><i class="bi bi-chevron-right"></i></button></div><div class="calendar-grid" id="calendar-grid"></div></div>
+              <input type="hidden" id="block-date" required>
+              <p class="selected-date mb-0" id="selected-date-label"></p>
+              <div class="mt-3"><label class="form-label" for="block-start">De</label><input class="form-control" id="block-start" type="time" value="08:00" required></div>
+              <div class="mt-2"><label class="form-label" for="block-end">À</label><input class="form-control" id="block-end" type="time" value="09:00" required></div>
+              <p class="modal-footnote mt-2 mb-0">La salle est indisponible uniquement sur ce créneau.</p>
+            </div>
+            <div>
+              <div class="mb-3"><label class="form-label" for="block-room">Salle à bloquer</label><select class="form-select" id="block-room" required></select><div class="modal-footnote mt-1" id="block-room-detail"></div></div>
+              <div class="mb-3"><label class="form-label" for="block-reason">Motif du blocage</label><textarea class="form-control" id="block-reason" rows="3" maxlength="240" placeholder="Maintenance, intervention…" required></textarea><div class="modal-footnote mt-1">Ce motif sera inclus dans la notification simulée.</div></div>
+              <div class="sim-notice mb-2"><i class="bi bi-envelope me-1"></i><strong>Notification automatique</strong><br>Les utilisateurs concernés recevront une notification avec la salle, le créneau et le motif du blocage.</div>
+              <div class="impact-warning" id="block-impact"><i class="bi bi-info-circle me-1"></i>Aucune réservation impactée sur ce créneau.</div>
+              <div class="be-alert be-alert-danger d-none mt-2" id="block-error" role="alert"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer"><span class="block-summary" id="block-summary">Sélectionnez une salle, une date et un créneau.</span><button class="btn btn-outline-secondary btn-sm" type="button" data-bs-dismiss="modal">Annuler</button><button class="btn btn-primary btn-sm" type="submit"><i class="bi bi-lock-fill"></i>Bloquer la salle</button></div>
+      </form>
+    </div></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/rules.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script>
+    (() => {
+      const $ = id => document.getElementById(id);
+      const ROLES_ADMIN = ["gestionnaire", "admin"];
+      const session = utilisateurCourant();
+      const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[char]));
+      const statusLabels = { active:"Active", confirmee:"Confirmée", terminee:"Terminée", annulee:"Annulée", liberee:"Libérée" };
+      const statusClasses = { active:"be-status-active", confirmee:"be-status-confirmee", terminee:"be-status-terminee", annulee:"be-status-annulee", liberee:"be-status-liberee" };
+      let users = [], rooms = [], equipment = [], reservations = [], selectedCampus = "", calendarMonth = new Date(), charts = [];
+      const today = aujourdhui();
+
+      const settingsLink = document.querySelector('#navbar a[href="admin-settings.html"]');
+      if (settingsLink) settingsLink.parentElement.remove();
+      const dashboardLink = document.querySelector('#navbar a[href="admin-dashboard.html"]');
+      if (dashboardLink && session.role === "gestionnaire") {
+        dashboardLink.href = "dashboard-gestion.html";
+        dashboardLink.innerHTML = '<i class="bi bi-grid-1x2"></i>Dashboard Gestion';
+        dashboardLink.classList.add("active");
+        dashboardLink.setAttribute("aria-current", "page");
+      }
+
+      function getRoom(id) { return rooms.find(room => Number(room.id) === Number(id)); }
+      function getEquipment(id) { return equipment.find(item => Number(item.id) === Number(id)); }
+      function getUser(id) { return users.find(user => Number(user.id) === Number(id)); }
+      function getResource(reservation) { return reservation.ressourceType === "equipement" ? getEquipment(reservation.ressourceId) : getRoom(reservation.ressourceId); }
+      function getCampus(reservation) { return getResource(reservation)?.campus || getUser(reservation.userId)?.campus || ""; }
+      function badge(status) { return `<span class="be-badge ${statusClasses[status] || ""}">${escapeHtml(statusLabels[status] || status || "Inconnu")}</span>`; }
+      function dateLabel(value, options = { day:"numeric", month:"short", year:"numeric" }) { return new Date(`${value}T12:00:00`).toLocaleDateString("fr-FR", options); }
+      function minutes(time) { const [h,m] = time.split(":").map(Number); return h*60+m; }
+      function roomSlotHours(room) {
+        const maxRoomHours = 12;
+        return Math.max(0, Math.min(maxRoomHours, reservations.filter(r => r.ressourceType === "salle" && Number(r.ressourceId) === Number(room.id) && r.date === today && ["active","confirmee"].includes(r.statut)).reduce((sum,r) => sum + Math.max(0,(minutes(r.fin)-minutes(r.debut))/60),0)));
+      }
+      function makeMiniChart(canvas, values, colors) {
+        return new Chart($(canvas), { type:"doughnut", data:{ datasets:[{ data:values, backgroundColor:colors, borderWidth:0, hoverOffset:0 }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:"72%", plugins:{ legend:{display:false}, tooltip:{enabled:false} }, animation:false } });
+      }
+      function updateStats() {
+        const campusRooms = rooms.filter(room => !room.bloquee && (!selectedCampus || room.campus === selectedCampus));
+        const roomCapacity = campusRooms.length * 12;
+        const roomHours = campusRooms.reduce((sum,room) => sum + roomSlotHours(room),0);
+        const occupancy = roomCapacity ? Math.round(roomHours/roomCapacity*100) : 0;
+        const byCampus = reservation => !selectedCampus || getCampus(reservation) === selectedCampus;
+        const noShows = reservations.filter(r => r.statut === "liberee" && byCampus(r)).length;
+        const todaysBookings = reservations.filter(r => r.date === today && ["active","confirmee"].includes(r.statut) && byCampus(r));
+        const pending = reservations.filter(r => r.ressourceType === "equipement" && r.enAttenteValidation && r.statut === "active" && byCampus(r));
+        $("stat-occupancy").textContent = `${occupancy}%`;
+        $("stat-occupancy-note").textContent = `${roomHours.toLocaleString("fr-FR",{maximumFractionDigits:1})} h réservées · aujourd’hui`;
+        $("stat-noshow").textContent = noShows;
+        $("stat-noshow-note").textContent = `${noShows} réservation${noShows>1?"s":""} libérée${noShows>1?"s":""} sans check-in`;
+        $("stat-today").textContent = todaysBookings.length;
+        $("stat-today-note").textContent = `${todaysBookings.filter(r=>r.ressourceType==="salle").length} salles · ${todaysBookings.filter(r=>r.ressourceType==="equipement").length} équipements`;
+        $("stat-pending").textContent = pending.length;
+        $("stat-pending-note").textContent = `${pending.filter(r=>getEquipment(r.ressourceId)?.categorie==="Réalité virtuelle").length} casque${pending.filter(r=>getEquipment(r.ressourceId)?.categorie==="Réalité virtuelle").length===1?"":"s"} VR · à valider`;
+        charts.forEach(chart=>chart.destroy());
+        charts = [
+          makeMiniChart("mini-occupancy",[occupancy,100-occupancy],["#0d8a7c","#e9edef"]),
+          makeMiniChart("mini-noshow",[noShows,Math.max(0,reservations.filter(byCampus).length-noShows)],["#c77d0a","#e9edef"]),
+          makeMiniChart("mini-bookings",[todaysBookings.length,Math.max(0,reservations.filter(byCampus).length-todaysBookings.length)],["#0d8a7c","#e9edef"]),
+          makeMiniChart("mini-pending",[pending.length,Math.max(0,equipment.filter(e=>!selectedCampus||e.campus===selectedCampus).length-pending.length)],["#c77d0a","#e9edef"])
+        ];
+      }
+      function renderRequests() {
+        const pending = reservations.filter(r => r.ressourceType === "equipement" && r.enAttenteValidation && r.statut === "active" && (!selectedCampus || getCampus(r) === selectedCampus)).sort((a,b)=>`${a.date} ${a.debut}`.localeCompare(`${b.date} ${b.debut}`));
+        $("pending-count").textContent = `${pending.length} en attente`;
+        $("pending-rows").innerHTML = pending.length ? pending.map(r => {
+          const user=getUser(r.userId), item=getEquipment(r.ressourceId);
+          return `<tr><td><span class="request-name">${escapeHtml(user?.nom||`Utilisateur ${r.userId}`)}</span><span class="request-detail">${escapeHtml(user?.role||"Utilisateur")} · ${escapeHtml(getCampus(r))}</span></td><td><span class="request-name">${escapeHtml(item?.nom||"Équipement")}</span><span class="request-detail">${escapeHtml(item?.categorie||"Matériel")}</span></td><td><span class="request-name">${escapeHtml(dateLabel(r.date))}</span><span class="request-detail">${escapeHtml(r.debut)} – ${escapeHtml(r.fin)}</span></td><td><span class="request-detail">${r.enAttenteValidation?"Validation gestionnaire requise":"—"}</span></td><td><div class="request-actions">${badge("active")}<button class="btn btn-primary btn-sm" data-request-action="approve" data-id="${r.id}" type="button"><i class="bi bi-check-lg"></i>Valider</button><button class="btn btn-outline-danger btn-sm" data-request-action="reject" data-id="${r.id}" type="button">Refuser</button></div></td></tr>`;
+        }).join("") : '<tr><td colspan="5"><div class="requests-empty">Aucune demande sensible en attente pour ce campus.</div></td></tr>';
+        $("pending-summary").textContent = `${pending.length} demande${pending.length===1?"":"s"} affichée${pending.length===1?"":"s"}`;
+      }
+      function loadBlocks() { try { return JSON.parse(localStorage.getItem("bookeasy:simulated-blocks")||"[]"); } catch (_) { return []; } }
+      function renderMaintenance() {
+        const actual = rooms.filter(room=>room.bloquee).map(room=>`<article class="maintenance-item"><i class="bi bi-wrench-adjustable maintenance-icon"></i><div class="maintenance-main"><div class="maintenance-name">${escapeHtml(room.nom)}</div><div class="maintenance-detail">Campus ${escapeHtml(room.campus)} · ${escapeHtml(room.batiment)} · Salle indisponible</div></div><span class="maintenance-state">Indisponible</span></article>`);
+        const simulated = loadBlocks().filter(block=>!selectedCampus||block.campus===selectedCampus).map(block=>`<article class="maintenance-item"><i class="bi bi-wrench-adjustable maintenance-icon"></i><div class="maintenance-main"><div class="maintenance-name">${escapeHtml(block.roomName)}</div><div class="maintenance-detail">Campus ${escapeHtml(block.campus)} · ${escapeHtml(dateLabel(block.date))} · ${escapeHtml(block.debut)}–${escapeHtml(block.fin)}<br>${escapeHtml(block.motif)}</div></div><span class="maintenance-state">Indisponible</span></article>`);
+        const list=[...actual,...simulated];
+        $("maintenance-list").innerHTML=list.length?list.join(""):'<div class="requests-empty">Aucune salle signalée indisponible.</div>';
+      }
+      function renderDashboard() {
+        updateStats(); renderRequests(); renderMaintenance();
+        $("date-today").textContent = `Aujourd’hui · ${dateLabel(today,{weekday:"long",day:"numeric",month:"long",year:"numeric"})}`;
+        $("updated-at").textContent = `Mis à jour à ${new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`;
+      }
+      function setCampus(campus) {
+        selectedCampus=campus;
+        document.querySelectorAll("[data-campus]").forEach(button=>button.classList.toggle("active",button.dataset.campus===campus));
+        renderDashboard();
+      }
+      function showAccessGate() {
+        $("dashboard-toolbar").classList.add("d-none");
+        document.querySelectorAll(".stats-row,.dashboard-panel").forEach(panel=>panel.classList.add("d-none"));
+        $("access-card").classList.remove("d-none");
+        const loginLink=document.querySelector('#navbar a[href="login.html"]'); if(loginLink) loginLink.href="#access-card";
+        const allowed=ROLES_ADMIN.includes(session.role);
+        $("access-title").textContent=allowed?"Accès gestionnaire requis":"Connexion gestionnaire requise";
+        $("access-message").textContent=allowed?"Votre rôle n’autorise pas l’accès à cette page.":"Connectez-vous avec un compte gestionnaire ou administrateur.";
+        $("admin-login-form").classList.toggle("d-none",allowed);
+        $("admin-login-form").addEventListener("submit",event=>{
+          event.preventDefault();
+          if(!connecter($("admin-email").value,$("admin-password").value)){ $("admin-login-error").textContent="Adresse e-mail ou mot de passe incorrect."; $("admin-login-error").classList.remove("d-none"); return; }
+          if(!ROLES_ADMIN.includes(utilisateurCourant().role)){ localStorage.removeItem("session"); $("admin-login-error").textContent="Ce compte n’a pas le rôle Gestionnaire ou Administrateur."; $("admin-login-error").classList.remove("d-none"); return; }
+          location.reload();
+        });
+      }
+
+      let calendarDate=new Date(`${today}T12:00:00`);
+      function paintCalendar() {
+        const year=calendarDate.getFullYear(), month=calendarDate.getMonth();
+        $("calendar-month-title").textContent=new Date(year,month,1).toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+        const firstDay=(new Date(year,month,1).getDay()+6)%7, daysInMonth=new Date(year,month+1,0).getDate(), prevMonthDays=new Date(year,month,0).getDate();
+        const weekdays=["L","M","M","J","V","S","D"].map(day=>`<span class="calendar-weekday">${day}</span>`).join("");
+        let days="";
+        for(let i=0;i<42;i++){
+          let day,dayMonth=month,dayYear=year,muted=false;
+          if(i<firstDay){day=prevMonthDays-firstDay+i+1;muted=true;dayMonth=month-1;if(dayMonth<0){dayMonth=11;dayYear--;}}
+          else if(i>=firstDay+daysInMonth){day=i-firstDay-daysInMonth+1;muted=true;dayMonth=month+1;if(dayMonth>11){dayMonth=0;dayYear++;}}
+          else day=i-firstDay+1;
+          const iso=`${dayYear}-${String(dayMonth+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+          const selected=iso===$("block-date").value, isToday=iso===today, disabled=iso<today;
+          days+=`<button class="calendar-day ${muted?"muted":""} ${selected?"selected":""} ${isToday?"today":""}" type="button" data-date="${iso}" ${disabled?"disabled":""} aria-pressed="${selected}">${day}</button>`;
+        }
+        $("calendar-grid").innerHTML=weekdays+days;
+        $("selected-date-label").innerHTML=$("block-date").value?`<i class="bi bi-calendar-check me-1"></i>${escapeHtml(dateLabel($("block-date").value,{weekday:"long",day:"numeric",month:"long",year:"numeric"}))}`:"Choisissez une date";
+        updateBlockPreview();
+      }
+      function affectedReservations() {
+        const roomId=Number($("block-room").value), date=$("block-date").value, start=$("block-start").value, end=$("block-end").value;
+        if(!roomId||!date||!start||!end||minutes(end)<=minutes(start))return [];
+        return reservations.filter(r=>r.ressourceType==="salle"&&Number(r.ressourceId)===roomId&&r.date===date&&["active","confirmee"].includes(r.statut)&&minutes(r.debut)<minutes(end)&&minutes(start)<minutes(r.fin));
+      }
+      function updateBlockPreview() {
+        const room=rooms.find(r=>Number(r.id)===Number($("block-room").value));
+        $("block-room-detail").textContent=room?`Campus ${room.campus} · ${room.batiment} · étage ${room.etage}`:"Aucune salle disponible";
+        const impacted=affectedReservations();
+        $("block-impact").innerHTML=impacted.length?`<i class="bi bi-exclamation-circle me-1"></i>${impacted.length} réservation${impacted.length>1?"s":""} concernée${impacted.length>1?"s":""} sur ce créneau. Les utilisateurs seront invités à choisir une autre salle.`:'<i class="bi bi-info-circle me-1"></i>Aucune réservation impactée sur ce créneau.';
+        const date=$("block-date").value;
+        $("block-summary").textContent=room&&date?`${room.nom} · ${dateLabel(date)} · ${$("block-start").value}–${$("block-end").value}`:"Sélectionnez une salle, une date et un créneau.";
+      }
+      function initBlockModal() {
+        const available=rooms.filter(room=>!room.bloquee);
+        $("block-room").innerHTML=available.map(room=>`<option value="${room.id}">${escapeHtml(room.nom)}</option>`).join("");
+        $("block-date").value=today; calendarDate=new Date(`${today}T12:00:00`); paintCalendar();
+      }
+      async function loadDashboard() {
+        try {
+          [users,rooms,equipment,reservations]=await Promise.all([chargerJSON("users"),chargerJSON("rooms"),chargerJSON("equipements"),chargerReservations()]);
+          renderDashboard(); initBlockModal();
+        } catch(error) {
+          $("pending-rows").innerHTML=`<tr><td colspan="5" class="text-danger">Impossible de charger les données (${escapeHtml(error.message)}).</td></tr>`;
+          console.error("Erreur de chargement du dashboard BookEasy :",error);
+        }
+      }
+
+      if(ROLES_ADMIN.includes(session.role)){ exigerRole(["gestionnaire","admin"]); loadDashboard(); }
+      else showAccessGate();
+
+      document.querySelectorAll("[data-campus]").forEach(button=>button.addEventListener("click",()=>setCampus(button.dataset.campus)));
+      $("pending-rows").addEventListener("click",event=>{
+        const button=event.target.closest("[data-request-action]"); if(!button)return;
+        const reservation=reservations.find(r=>Number(r.id)===Number(button.dataset.id)); if(!reservation||!reservation.enAttenteValidation)return;
+        const user=getUser(reservation.userId), name=user?.nom||"L’utilisateur";
+        reservation.enAttenteValidation=false;
+        if(button.dataset.requestAction==="approve"){reservation.statut="confirmee";sauverReservations(reservations);renderDashboard();afficherToast(`Demande validée pour ${name}.`);}
+        else{reservation.statut="annulee";reservation.motifRefus="Refusée par un gestionnaire.";sauverReservations(reservations);renderDashboard();afficherToast(`Demande refusée pour ${name}.`);}
+      });
+      $("calendar-grid").addEventListener("click",event=>{
+        const button=event.target.closest("[data-date]");if(!button||button.disabled)return;
+        $("block-date").value=button.dataset.date;calendarDate=new Date(`${button.dataset.date}T12:00:00`);paintCalendar();
+      });
+      $("month-prev").addEventListener("click",()=>{const prev=new Date(calendarDate.getFullYear(),calendarDate.getMonth()-1,1);const min=new Date(`${today}T12:00:00`);if(prev.getFullYear()>min.getFullYear()||prev.getMonth()>=min.getMonth())calendarDate=prev;paintCalendar();});
+      $("month-next").addEventListener("click",()=>{calendarDate=new Date(calendarDate.getFullYear(),calendarDate.getMonth()+1,1);paintCalendar();});
+      ["block-room","block-start","block-end"].forEach(id=>$(id).addEventListener("change",updateBlockPreview));
+      $("block-form").addEventListener("submit",event=>{
+        event.preventDefault();
+        const room=getRoom($("block-room").value),date=$("block-date").value,start=$("block-start").value,end=$("block-end").value,reason=$("block-reason").value.trim();
+        if(!room||!date||!reason||!start||!end||minutes(end)<=minutes(start)){$("block-error").textContent="Vérifiez la salle, la date, le motif et l’ordre des heures.";$("block-error").classList.remove("d-none");return;}
+        const affected=affectedReservations(),createdAt=new Date().toISOString();
+        const entry={roomId:Number(room.id),roomName:room.nom,campus:room.campus,date,debut:start,fin:end,motif:reason,creeLe:createdAt,notifications:affected.map(r=>({userId:Number(r.userId),reservationId:Number(r.id),date:createdAt,message:`La réservation de ${room.nom} du ${dateLabel(date)} (${start}–${end}) est concernée par un blocage : ${reason}`}))};
+        let blocks=[];try{blocks=JSON.parse(localStorage.getItem("bookeasy:simulated-blocks")||"[]");}catch(_){blocks=[];}blocks.push(entry);localStorage.setItem("bookeasy:simulated-blocks",JSON.stringify(blocks));
+        $("block-error").classList.add("d-none");bootstrap.Modal.getInstance($("modalBlocage"))?.hide();
+        event.target.reset();$("block-date").value=today;calendarDate=new Date(`${today}T12:00:00`);paintCalendar();$("block-start").value="08:00";$("block-end").value="09:00";$("block-reason").value="";updateBlockPreview();renderMaintenance();
+        afficherToast(`Blocage simulé pour ${room.nom}. ${affected.length} utilisateur${affected.length===1?"":"s"} notifié${affected.length===1?"":"s"}.`);
+      });
+      $("modalBlocage").addEventListener("show.bs.modal",()=>{$("block-error").classList.add("d-none");updateBlockPreview();});
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5f7">
+  <title>BookEasy · Profil &amp; paramètres</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/Theme.css" rel="stylesheet">
+  <style>
+    .profile-page { min-height: calc(100vh - 120px); }
+    .profile-heading { padding: .25rem 0 1.1rem; }
+    .profile-eyebrow { color: var(--be-teal); font-size: .625rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .profile-grid { display: grid; grid-template-columns: minmax(155px, .78fr) minmax(220px, 1fr) minmax(290px, 1.42fr); gap: 1rem; align-items: start; }
+    .profile-nav { display: grid; gap: .35rem; }
+    .profile-nav a { display: flex; align-items: center; gap: .55rem; color: var(--be-muted); padding: .55rem .65rem; border-radius: var(--be-radius); font-size: .75rem; }
+    .profile-nav a:hover, .profile-nav a.active { color: var(--be-teal-dark); background: var(--be-teal-light); }
+    .profile-nav a.active { font-weight: 600; }
+    .profile-nav .nav-divider { border-top: 1px solid var(--be-border); margin: .65rem 0; }
+    .profile-note { font-size: .6875rem; color: var(--be-muted); line-height: 1.55; }
+    .profile-stack { display: grid; gap: 1rem; }
+    .profile-card { box-shadow: 0 3px 12px rgba(21,29,51,.055); overflow: hidden; }
+    .profile-card .card-body { padding: 1rem; }
+    .profile-card h2 { font-size: .95rem; margin: 0; }
+    .profile-card-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .9rem; }
+    .profile-badge { display: inline-flex; align-items: center; border-radius: 50rem; padding: .18rem .55rem; background: var(--be-teal-light); color: var(--be-teal-dark); font-size: .625rem; font-weight: 600; white-space: nowrap; }
+    .profile-identity { text-align: center; padding: .1rem 0 .9rem; border-bottom: 1px solid var(--be-border); }
+    .profile-avatar { width: 62px; height: 62px; margin: 0 auto .55rem; display: grid; place-items: center; border-radius: 50%; color: white; background: linear-gradient(145deg,#a9bcb5,#687e78); font-size: 1.3rem; font-weight: 600; }
+    .profile-name { color: var(--be-ink); font-size: 1.05rem; font-weight: 700; }
+    .profile-role { margin-top: .3rem; }
+    .profile-details { display: grid; gap: .65rem; padding-top: .85rem; }
+    .profile-detail { display: flex; align-items: flex-start; gap: .6rem; min-width: 0; }
+    .profile-detail-icon { width: 27px; height: 27px; display: grid; place-items: center; flex: 0 0 27px; color: var(--be-muted); background: var(--be-bg); border-radius: 6px; }
+    .profile-detail span { display: block; }
+    .profile-detail .label { color: var(--be-muted); font-size: .625rem; }
+    .profile-detail .value { color: var(--be-ink); font-size: .72rem; font-weight: 600; overflow-wrap: anywhere; }
+    .profile-help { margin: .8rem 0 0; color: var(--be-muted); font-size: .625rem; line-height: 1.45; }
+    .quota-period { color: var(--be-muted); font-size: .65rem; margin: .6rem 0 .7rem; }
+    .quota-total { font-size: 1.35rem; color: var(--be-ink); font-weight: 600; line-height: 1.2; }
+    .quota-total small { font-size: .7rem; color: var(--be-muted); font-weight: 400; }
+    .quota-progress { height: 5px; margin: .55rem 0 .4rem; background: #edf0f2; }
+    .quota-progress .progress-bar { background: var(--be-teal); border-radius: 10px; }
+    .preference-row { display: flex; align-items: center; gap: .7rem; padding: .72rem 0; border-top: 1px solid var(--be-border); }
+    .preference-icon { width: 30px; height: 30px; flex: 0 0 30px; display: grid; place-items: center; border-radius: 7px; color: var(--be-muted); background: var(--be-bg); }
+    .preference-copy { flex: 1; min-width: 0; }
+    .preference-title { color: var(--be-ink); font-size: .72rem; font-weight: 600; }
+    .preference-description { color: var(--be-muted); font-size: .625rem; line-height: 1.4; }
+    .form-switch .form-check-input { margin: 0; }
+    .readonly-pref { display: flex; align-items: center; gap: .4rem; color: var(--be-muted); font-size: .62rem; }
+    .notif-list { max-height: 270px; overflow-y: auto; }
+    .notification { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: .6rem; padding: .7rem 0; border-top: 1px solid var(--be-border); }
+    .notification.unread { background: linear-gradient(90deg, var(--be-teal-light), transparent 85%); margin-inline: -.35rem; padding-inline: .35rem; }
+    .notification .notif-content { font-size: .68rem; color: var(--be-text); line-height: 1.45; }
+    .notification .notif-date { display: block; color: var(--be-muted); font-size: .6rem; margin-top: .18rem; }
+    .booking-item { display: flex; gap: .65rem; padding: .65rem 0; border-top: 1px solid var(--be-border); }
+    .booking-date { flex: 0 0 43px; text-align: center; align-self: flex-start; background: #f1f4f7; border-radius: 6px; padding: .35rem .2rem; color: var(--be-ink); }
+    .booking-date small { display: block; color: var(--be-muted); font-size: .52rem; text-transform: uppercase; }
+    .booking-date strong { font-size: .9rem; }
+    .booking-info { flex: 1; min-width: 0; }
+    .booking-title { color: var(--be-ink); font-size: .72rem; font-weight: 700; }
+    .booking-meta { color: var(--be-muted); font-size: .62rem; }
+    .booking-actions { display: flex; justify-content: space-between; align-items: center; gap: .5rem; border-top: 1px solid var(--be-border); padding-top: .65rem; margin-top: .3rem; }
+    .security-note { display: flex; gap: .55rem; color: var(--be-muted); font-size: .625rem; line-height: 1.45; padding: .2rem .5rem; }
+    .profile-login { max-width: 430px; margin: 1rem auto 2rem; }
+    @media (max-width: 767.98px) { .profile-grid { grid-template-columns: minmax(0,1fr) minmax(0,1.5fr); } .profile-sidebar { grid-column: 1 / -1; } .profile-nav { display: flex; flex-wrap: wrap; } .profile-nav .nav-divider, .profile-note { display: none; } }
+    @media (max-width: 575.98px) { .profile-grid { grid-template-columns: 1fr; } .profile-sidebar { grid-column: auto; } .profile-nav { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); } .profile-nav a { font-size: .7rem; } .profile-heading { padding-bottom: .8rem; } }
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+  <main class="be-container be-section profile-page">
+    <header class="profile-heading">
+      <div class="profile-eyebrow">Mon compte</div>
+      <h1 class="mb-1">Profil &amp; paramètres</h1>
+      <p class="be-muted mb-0">Retrouvez votre compte ECE et personnalisez vos préférences de réservation.</p>
+    </header>
+
+    <section class="card profile-card profile-login d-none" id="connexion-profil" aria-labelledby="login-title">
+      <div class="card-body">
+        <h2 id="login-title" class="mb-2">Connectez-vous à votre compte</h2>
+        <p class="be-muted mb-3">Utilisez votre compte BookEasy pour accéder à votre profil et à vos réservations.</p>
+        <form id="profile-login-form">
+          <div class="mb-3"><label class="form-label" for="profile-login-email">Adresse e-mail</label><input class="form-control" id="profile-login-email" type="email" autocomplete="username" required></div>
+          <div class="mb-3"><label class="form-label" for="profile-login-password">Mot de passe</label><input class="form-control" id="profile-login-password" type="password" autocomplete="current-password" required></div>
+          <div class="be-alert be-alert-danger d-none mb-3" id="profile-login-error" role="alert">Adresse e-mail ou mot de passe incorrect.</div>
+          <button class="btn btn-primary w-100" type="submit"><i class="bi bi-box-arrow-in-right"></i>Se connecter</button>
+        </form>
+      </div>
+    </section>
+
+    <div class="profile-grid d-none" id="profile-content">
+      <aside class="profile-sidebar" aria-label="Navigation du profil">
+        <nav class="profile-nav">
+          <a class="active" href="#compte"><i class="bi bi-person"></i>Mon profil</a>
+          <a href="#notifications"><i class="bi bi-bell"></i>Notifications</a>
+          <a href="#securite"><i class="bi bi-shield-check"></i>Sécurité &amp; connexion</a>
+          <div class="nav-divider"></div>
+        </nav>
+        <p class="profile-note"><strong class="text-dark">Vos données sont synchronisées</strong><br>Votre identité est gérée par le compte SSO de votre école.</p>
+      </aside>
+
+      <div class="profile-stack">
+        <section class="card profile-card" id="compte" aria-labelledby="account-title">
+          <div class="card-body">
+            <div class="profile-card-head"><h2 id="account-title">Compte SSO ECE</h2><i class="bi bi-shield-check be-muted" aria-hidden="true"></i></div>
+            <div class="profile-identity">
+              <div class="profile-avatar" id="avatar" aria-hidden="true">BM</div>
+              <div class="profile-name" id="user-name">Chargement…</div>
+              <div class="profile-role"><span class="profile-badge" id="user-role">Compte ECE</span></div>
+            </div>
+            <div class="profile-details">
+              <div class="profile-detail"><span class="profile-detail-icon"><i class="bi bi-envelope"></i></span><div><span class="label">Email institutionnel</span><span class="value" id="user-email">—</span></div></div>
+              <div class="profile-detail"><span class="profile-detail-icon"><i class="bi bi-geo-alt"></i></span><div><span class="label">Campus de rattachement</span><span class="value" id="user-campus">—</span></div></div>
+            </div>
+            <p class="profile-help">Pour modifier votre identité, contactez le service scolarité ECE.</p>
+          </div>
+        </section>
+
+        <section class="card profile-card" aria-labelledby="quota-title">
+          <div class="card-body">
+            <div class="profile-card-head mb-0"><h2 id="quota-title">Quota hebdomadaire</h2></div>
+            <p class="quota-period" id="quota-period">Semaine en cours</p>
+            <div class="d-flex align-items-baseline justify-content-between gap-2"><div class="quota-total"><span id="quota-used">0 h</span> <small>/ <span id="quota-limit">6 h</span> consommées</small></div><span class="be-small" id="quota-percent">0 %</span></div>
+            <div class="progress quota-progress" role="progressbar" aria-label="Quota hebdomadaire utilisé" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" id="quota-bar" style="width:0%"></div></div>
+            <div class="be-small"><span id="quota-remaining">6 h</span> restantes cette semaine</div>
+            <div class="profile-help border-top pt-2"><i class="bi bi-arrow-clockwise me-1"></i>Réinitialisé chaque lundi à 00:00</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="profile-stack">
+        <section class="card profile-card" id="notifications" aria-labelledby="notifications-title">
+          <div class="card-body">
+            <div class="profile-card-head"><h2 id="notifications-title">Notifications</h2><span class="profile-badge"><i class="bi bi-envelope-check me-1"></i>Email ECE</span></div>
+            <p class="profile-help mt-0 mb-2">Choisissez les rappels qui vous aident à ne manquer aucun créneau.</p>
+            <div class="preference-row"><span class="preference-icon"><i class="bi bi-calendar2-check"></i></span><div class="preference-copy"><div class="preference-title">Rappels avant créneau</div><div class="preference-description">Recevez un email 30 min avant votre réservation.</div></div><div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="pref-rappel" aria-label="Rappels avant créneau"></div></div>
+            <div class="preference-row"><span class="preference-icon"><i class="bi bi-arrow-repeat"></i></span><div class="preference-copy"><div class="preference-title">Alertes check-in</div><div class="preference-description">Soyez averti au début du créneau pour valider votre présence.</div></div><div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="pref-checkin" aria-label="Alertes check-in"></div></div>
+            <div class="preference-row"><span class="preference-icon"><i class="bi bi-shield-lock"></i></span><div class="preference-copy"><div class="preference-title">Annulations obligatoires</div><div class="preference-description">Notifications nécessaires au bon suivi de vos réservations.</div></div><div class="readonly-pref"><input class="form-check-input" type="checkbox" id="pref-annulation" checked disabled aria-label="Annulations obligatoires, toujours activées"><i class="bi bi-lock-fill" aria-hidden="true"></i></div></div>
+            <p class="profile-help mb-0"><i class="bi bi-check2 me-1"></i>Vos préférences sont enregistrées automatiquement.</p>
+            <h3 class="mt-3 mb-2">Votre activité récente</h3>
+            <div id="notification-list" class="notif-list" aria-live="polite"><p class="be-small mb-0">Chargement des notifications…</p></div>
+          </div>
+        </section>
+
+        <section class="card profile-card" aria-labelledby="today-title">
+          <div class="card-body">
+            <div class="profile-card-head"><h2 id="today-title">Vos réservations du jour</h2><span class="profile-badge" id="today-count">0 réservation</span></div>
+            <div id="today-bookings"><p class="be-small mb-0">Chargement des réservations…</p></div>
+            <div class="booking-actions"><span class="be-small" id="today-footnote">Aucune réservation à valider.</span><a class="btn btn-primary btn-sm" href="mes-reservations.html"><i class="bi bi-arrow-right"></i>Mes réservations</a></div>
+          </div>
+        </section>
+        <section class="card profile-card" aria-labelledby="upcoming-title">
+          <div class="card-body">
+            <div class="profile-card-head mb-1"><h2 id="upcoming-title">Mes réservations</h2></div>
+            <div id="upcoming-bookings"><p class="be-small mb-0">Chargement…</p></div>
+          </div>
+        </section>
+        <div class="security-note" id="securite"><i class="bi bi-lock-fill"></i><span><strong class="text-dark">Connexion sécurisée avec votre SSO ECE</strong><br>BookEasy ne stocke pas votre mot de passe. La gestion de vos accès reste assurée par votre école.</span></div>
+      </div>
+    </div>
+  </main>
+  <div id="footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/rules.js"></script>
+  <script>
+    (() => {
+      const $ = id => document.getElementById(id);
+      const user = utilisateurCourant();
+      const roleLabels = { invite: "Invité", etudiant: "Étudiant", enseignant: "Enseignant", gestionnaire: "Gestionnaire", admin: "Administrateur" };
+      const prefsKey = `bookeasy:profile-prefs:${user.id}`;
+      const prefIds = ["pref-rappel", "pref-checkin"];
+      const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+      const dateLongue = value => new Date(value.replace(" ", "T") + (value.length === 10 ? "T12:00:00" : "")).toLocaleString("fr-FR", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
+      const jourMois = value => new Date(value + "T12:00:00").toLocaleDateString("fr-FR", { day:"2-digit", month:"short" }).replace(".", "").toUpperCase();
+      const heure = r => `${r.debut} – ${r.fin}`;
+      const formatHeures = h => `${Number.isInteger(h) ? h : h.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} h`;
+
+      if (!estConnecte()) {
+        $("connexion-profil").classList.remove("d-none");
+        const link = document.querySelector('#navbar a[href="login.html"]');
+        if (link) link.href = "#connexion-profil";
+        $("profile-login-form").addEventListener("submit", event => {
+          event.preventDefault();
+          const ok = connecter($("profile-login-email").value, $("profile-login-password").value);
+          if (ok) location.reload();
+          else $("profile-login-error").classList.remove("d-none");
+        });
+        return;
+      }
+      $("profile-content").classList.remove("d-none");
+
+      function chargerPreferences() {
+        let saved = {};
+        try { saved = JSON.parse(localStorage.getItem(prefsKey)) || {}; } catch (_) { /* préférences absentes ou illisibles */ }
+        prefIds.forEach(id => { $(id).checked = saved[id] !== false; $(id).addEventListener("change", () => {
+          const values = Object.fromEntries(prefIds.map(key => [key, $(key).checked]));
+          localStorage.setItem(prefsKey, JSON.stringify(values));
+        }); });
+      }
+
+      async function afficherProfil() {
+        $("user-name").textContent = user.nom || "Utilisateur BookEasy";
+        $("user-email").textContent = user.email || "Adresse non renseignée";
+        $("user-role").textContent = roleLabels[user.role] || user.role || "Utilisateur";
+        $("avatar").textContent = (user.nom || "BE").split(/\s+/).slice(0, 2).map(p => p[0]).join("").toUpperCase();
+        chargerPreferences();
+        try {
+          const [users, rooms, equipements, reservations, settings, notifications] = await Promise.all([
+            chargerJSON("users"), chargerJSON("rooms"), chargerJSON("equipements"), chargerReservations(), chargerReglages(), chargerJSON("notifications")
+          ]);
+          const detail = users.find(u => u.id === user.id) || {};
+          $("user-campus").textContent = detail.campus || "Campus non renseigné";
+
+          const mine = reservations.filter(r => r.userId === user.id);
+          const today = aujourdhui();
+          const debut = debutSemaine(today);
+          const semaine = mine.filter(r => estActive(r) && debutSemaine(r.date) === debut);
+          const used = semaine.reduce((sum, r) => sum + (enMinutes(r.fin) - enMinutes(r.debut)) / 60, 0);
+          const limit = Number(settings.quotaHebdoHeures) || 0;
+          const percent = limit ? Math.min(100, Math.round(used / limit * 100)) : 0;
+          $("quota-period").textContent = `${formatDate(today)} · semaine en cours`;
+          $("quota-used").textContent = formatHeures(used);
+          $("quota-limit").textContent = formatHeures(limit);
+          $("quota-percent").textContent = `${percent} %`;
+          $("quota-remaining").textContent = formatHeures(Math.max(0, limit - used));
+          $("quota-bar").style.width = `${percent}%`;
+          $("quota-bar").parentElement.setAttribute("aria-valuenow", percent);
+
+          const resourceName = r => r.ressourceType === "equipement"
+            ? (equipements.find(x => x.id === r.ressourceId)?.nom || "Équipement")
+            : (rooms.find(x => x.id === r.ressourceId)?.nom || "Salle");
+          const bookingMarkup = r => `<article class="booking-item"><div class="booking-date"><small>${esc(jourMois(r.date).split(" ")[0])}</small><strong>${new Date(r.date + "T12:00:00").getDate()}</strong></div><div class="booking-info"><div class="d-flex justify-content-between gap-2"><span class="booking-title">${esc(resourceName(r))}</span><span class="profile-badge">${esc(LIBELLES_STATUT[r.statut] || r.statut)}</span></div><div class="booking-meta">${esc(formatDate(r.date))} · ${esc(heure(r))}</div><div class="booking-meta">${esc(r.ressourceType === "equipement" ? "Équipement" : `Campus ${rooms.find(x => x.id === r.ressourceId)?.campus || detail.campus || "ECE"}`)}</div></div></article>`;
+
+          const duJour = mine.filter(r => r.date === today && estActive(r)).sort((a,b) => a.debut.localeCompare(b.debut));
+          $("today-count").textContent = `${duJour.length} réservation${duJour.length > 1 ? "s" : ""}`;
+          $("today-bookings").innerHTML = duJour.length ? duJour.map(bookingMarkup).join("") : '<p class="be-small mb-0 py-2">Vous n’avez aucune réservation prévue aujourd’hui.</p>';
+          $("today-footnote").textContent = duJour.length ? "Pensez à valider votre présence." : "Aucune réservation à valider.";
+
+          const toutesMiennes = [...mine].sort((a,b) => `${b.date} ${b.debut}`.localeCompare(`${a.date} ${a.debut}`));
+          $("upcoming-bookings").innerHTML = toutesMiennes.length ? toutesMiennes.map(bookingMarkup).join("") : '<p class="be-small mb-0">Aucune réservation enregistrée.</p>';
+
+          const notifs = notifications.filter(n => n.userId === user.id).sort((a,b) => b.date.localeCompare(a.date));
+          $("notification-list").innerHTML = notifs.length ? notifs.map(n => `<article class="notification ${n.lue ? "" : "unread"}"><span class="preference-icon"><i class="bi ${n.lue ? "bi-bell" : "bi-bell-fill"}"></i></span><div class="notif-content">${esc(n.message)}<span class="notif-date">${esc(dateLongue(n.date))} · ${n.lue ? "Lue" : "Non lue"}</span></div></article>`).join("") : '<p class="be-small mb-0">Aucune notification pour le moment.</p>';
+        } catch (error) {
+          $("user-campus").textContent = "Indisponible";
+          ["today-bookings", "upcoming-bookings", "notification-list"].forEach(id => { $(id).innerHTML = '<p class="be-small mb-0">Les données sont indisponibles. Ouvrez BookEasy avec un serveur local.</p>'; });
+          console.error("Erreur de chargement du profil BookEasy :", error);
+        }
+      }
+      afficherProfil();
+    })();
+  </script>
+</body>
+</html>

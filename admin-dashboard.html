@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5f7">
+  <title>BookEasy · Administration du système</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/Theme.css" rel="stylesheet">
+  <style>
+    .be-container { max-width:820px; }
+    .be-navbar .be-container { max-width:1120px; }
+    .be-section { padding:1.1rem 0 1.35rem; }
+    .admin-heading { margin-bottom:1rem; }
+    .admin-eyebrow { color:var(--be-muted); font-size:.57rem; text-transform:uppercase; letter-spacing:.04em; font-weight:600; margin-bottom:.2rem; }
+    .admin-heading h1 { font-size:1.4rem; margin:0 0 .25rem; }
+    .admin-heading p { color:var(--be-muted); font-size:.65rem; margin:0; }
+    .admin-tabs { display:flex; align-items:center; gap:.25rem; min-height:37px; padding:.15rem .45rem; margin-bottom:.75rem; white-space:nowrap; overflow-x:auto; }
+    .admin-tab { display:inline-flex; align-items:center; gap:.35rem; height:34px; padding:.35rem .55rem; color:var(--be-muted); font-size:.59rem; border:0; border-bottom:2px solid transparent; background:transparent; cursor:pointer; font-family:inherit; }
+    .admin-tab.active { color:var(--be-teal-dark); border-bottom-color:var(--be-teal); font-weight:600; }
+    .campus-pill { margin-left:auto; padding:.2rem .45rem; border-radius:20px; background:#eef1f3; color:var(--be-muted); font-size:.52rem; }
+    .admin-layout { display:grid; grid-template-columns:minmax(0,3fr) minmax(170px,1fr); gap:.75rem; align-items:start; }
+    .admin-column { display:grid; gap:.75rem; }
+    .admin-card { border:1px solid var(--be-border); border-radius:9px; background:#fff; box-shadow:0 2px 7px rgba(21,29,51,.025); }
+    .admin-card-body { padding:.75rem; }
+    .admin-card-title { color:var(--be-ink); font-size:.75rem; font-weight:500; margin:0; }
+    .admin-card-subtitle { color:var(--be-muted); font-size:.53rem; margin:.15rem 0 .6rem; }
+    .admin-field-label { color:var(--be-ink); display:block; font-size:.53rem; font-weight:600; margin-bottom:.22rem; }
+    .admin-input-group { display:flex; align-items:center; min-width:0; border:1px solid var(--be-border); border-radius:6px; overflow:hidden; background:#fff; }
+    .admin-input-group input { width:1%; min-width:0; flex:1; height:27px; border:0; outline:0; color:var(--be-ink); background:transparent; padding:.25rem .5rem; font-size:.58rem; }
+    .admin-input-group span { color:var(--be-muted); padding:0 .45rem; font-size:.5rem; white-space:nowrap; }
+    .admin-input-group:focus-within { border-color:var(--be-teal); box-shadow:0 0 0 2px rgba(13,138,124,.12); }
+    .admin-help { color:var(--be-muted); font-size:.5rem; line-height:1.4; margin:.18rem 0 0; }
+    .form-section { border-top:1px solid var(--be-border); margin-top:.65rem; padding-top:.65rem; }
+    .section-label { color:var(--be-ink); font-size:.55rem; font-weight:600; margin:0 0 .45rem; }
+    .checkin-note { display:flex; gap:.4rem; align-items:center; min-height:27px; height:100%; border-radius:6px; padding:.3rem .5rem; background:#eef2f3; color:var(--be-muted); font-size:.5rem; line-height:1.35; }
+    .checkin-note i { color:var(--be-muted); font-size:.7rem; flex:none; }
+    .side-title { display:flex; align-items:center; gap:.4rem; color:var(--be-ink); font-size:.67rem; margin:0 0 .55rem; }
+    .side-title i { color:var(--be-teal); }
+    .side-copy { color:var(--be-muted); font-size:.53rem; line-height:1.5; margin:0 0 .45rem; }
+    .campus-line { color:var(--be-text); font-size:.54rem; margin:.22rem 0; }
+    .side-divider { border-top:1px solid var(--be-border); margin:.5rem 0; }
+    .role-title { color:var(--be-ink); font-size:.54rem; font-weight:600; margin:.35rem 0 .15rem; }
+    .role-copy { color:var(--be-muted); font-size:.51rem; line-height:1.4; margin:0; }
+    .admin-lock-label { display:inline-flex; margin-top:.35rem; border-radius:5px; padding:.18rem .35rem; color:var(--be-teal-dark); background:var(--be-teal-light); font-size:.47rem; font-weight:600; }
+    .warning-note { display:flex; align-items:center; gap:.35rem; margin-top:.6rem; border-radius:6px; background:var(--be-warning-bg); color:var(--be-warning-text); padding:.45rem .55rem; font-size:.52rem; }
+    .admin-form-footer { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:.15rem 0 0; }
+    .last-modified { color:var(--be-muted); font-size:.52rem; }
+    .admin-save { font-size:.58rem; padding:.4rem .65rem; }
+    .access-card { max-width:430px; margin:2rem auto; }
+    .form-error { color:var(--be-annulee); font-size:.55rem; margin:.4rem 0 0; }
+    .settings-footer { border-top:1px solid var(--be-border); background:#f7f8f9; }
+    .settings-footer-inner { display:flex; justify-content:space-between; gap:.8rem; align-items:center; padding:.7rem 0; color:var(--be-muted); font-size:.5rem; }
+    .footer-links { display:flex; flex-wrap:wrap; gap:.75rem; }
+    @media(min-width:768px) and (max-width:991.98px){.be-navbar.navbar-expand-lg .navbar-toggler{display:none}.be-navbar.navbar-expand-lg .navbar-collapse{display:flex!important;flex-basis:auto;margin:0;padding:0;border:0}.be-navbar .navbar-nav{flex-direction:row;white-space:nowrap}.be-navbar .nav-link{font-size:.62rem;padding:.4rem .42rem;white-space:nowrap}.be-navbar .btn{font-size:.62rem;padding:.35rem .55rem;white-space:nowrap}.be-brand{font-size:.9rem}}
+    @media(max-width:767.98px){.admin-layout{grid-template-columns:1fr}.side-column{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-footer-inner{align-items:flex-start;flex-direction:column}}
+    @media(max-width:575.98px){.admin-heading h1{font-size:1.2rem}.admin-layout{gap:.6rem}.side-column{grid-template-columns:1fr}.admin-form-footer{align-items:stretch;flex-direction:column}.admin-save{width:100%}.admin-tabs{gap:.1rem}.admin-tab{padding-inline:.35rem;font-size:.54rem}.campus-pill{display:none}}
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+  <main class="be-container be-section">
+    <header class="admin-heading">
+      <div class="admin-eyebrow">Espace administrateur</div>
+      <h1>Administration du système</h1>
+      <p>Gérez les ressources, les accès et les règles de réservation de BookEasy.</p>
+    </header>
+
+    <nav class="admin-tabs admin-card" aria-label="Sections d’administration" role="tablist">
+      <button class="admin-tab" type="button" role="tab" id="tab-button-resources" aria-selected="false" aria-controls="panel-resources" data-admin-tab="resources"><i class="bi bi-display"></i>Salles &amp; Équipements</button>
+      <button class="admin-tab" type="button" role="tab" id="tab-button-accounts" aria-selected="false" aria-controls="panel-accounts" data-admin-tab="accounts"><i class="bi bi-people"></i>Comptes &amp; Rôles</button>
+      <button class="admin-tab active" type="button" role="tab" id="tab-button-rules" aria-selected="true" aria-controls="panel-rules" data-admin-tab="rules"><i class="bi bi-sliders"></i>Règles Métier</button>
+      <span class="campus-pill">Tous les campus</span>
+    </nav>
+
+    <div id="admin-content" class="d-none">
+      <section id="panel-rules" class="admin-tab-panel" role="tabpanel" aria-labelledby="tab-button-rules">
+    <section class="admin-layout">
+      <div class="admin-column">
+        <section class="admin-card" aria-labelledby="rules-title"><div class="admin-card-body">
+          <h2 class="admin-card-title" id="rules-title">Règles de réservation</h2>
+          <p class="admin-card-subtitle">Définissez les limites applicables aux salles et aux équipements sur les deux campus.</p>
+          <div class="row g-2">
+            <div class="col-md-6"><label class="admin-field-label" for="quota">Quota max hebdo</label><div class="admin-input-group"><input id="quota" type="number" min="1" step="1"><span>heures / semaine</span></div><p class="admin-help">Temps cumulé de réservation par utilisateur.</p></div>
+            <div class="col-md-6"><label class="admin-field-label" for="anticipation">Anticipation max</label><div class="admin-input-group"><input id="anticipation" type="number" min="0" step="1"><span>jours</span></div><p class="admin-help">Délai maximal pour réserver à l’avance.</p></div>
+          </div>
+          <div class="form-section"><p class="section-label">Durée max par créneau</p><div class="row g-2">
+            <div class="col-md-6"><label class="admin-field-label" for="duree-etudiant">Étudiant</label><div class="admin-input-group"><input id="duree-etudiant" type="number" min="1" step="1"><span>heures</span></div></div>
+            <div class="col-md-6"><label class="admin-field-label" for="duree-enseignant">Enseignant</label><div class="admin-input-group"><input id="duree-enseignant" type="number" min="1" step="1"><span>heures</span></div></div>
+          </div></div>
+          <div class="form-section"><div class="row g-2 align-items-end">
+            <div class="col-md-6"><label class="admin-field-label" for="checkin">Délai check-in</label><div class="admin-input-group"><input id="checkin" type="number" min="0" step="1"><span>minutes</span></div></div>
+            <div class="col-md-6"><div class="checkin-note"><i class="bi bi-info-circle"></i><span>La présence doit être confirmée dans ce délai après le début du créneau. Au-delà, la réservation est considérée comme une absence.</span></div></div>
+          </div></div>
+        </div></section>
+
+        <section class="admin-card" aria-labelledby="sanctions-title"><div class="admin-card-body">
+          <h2 class="admin-card-title" id="sanctions-title">Politique de sanctions</h2>
+          <p class="admin-card-subtitle">Limitez les absences répétées pour garantir l’accès aux ressources à tous.</p>
+          <div class="row g-2">
+            <div class="col-md-6"><label class="admin-field-label" for="seuil-absences">Seuil d’absences avant suspension</label><div class="admin-input-group"><input id="seuil-absences" type="number" min="1" step="1"><span>absences</span></div></div>
+            <div class="col-md-6"><label class="admin-field-label" for="periode">Période de référence</label><div class="admin-input-group"><input id="periode" type="number" min="1" step="1"><span>jours</span></div></div>
+          </div>
+          <div class="warning-note"><i class="bi bi-shield-exclamation"></i><span id="sanction-warning">Une suspension s’applique à partir du seuil défini sur la période de référence.</span></div>
+        </div></section>
+
+        <div class="admin-form-footer"><span class="last-modified" id="settings-source">Paramètres chargés depuis les données BookEasy.</span><button class="btn btn-primary admin-save" type="button" id="save-settings" disabled><i class="bi bi-check-lg"></i>Enregistrer les modifications</button></div>
+        <div class="be-alert be-alert-danger d-none" id="settings-error" role="alert"></div>
+      </div>
+
+      <aside class="admin-column side-column">
+        <section class="admin-card"><div class="admin-card-body"><h2 class="side-title"><i class="bi bi-sliders"></i>Des règles communes</h2><p class="side-copy">Ces paramètres s’appliquent aux utilisateurs de tous les campus BookEasy.</p><div id="campus-list"></div><div class="side-divider"></div><p class="side-copy mb-0">Vérifiez les valeurs avant d’enregistrer. Les nouvelles règles encadreront les prochaines réservations.</p></div></section>
+        <section class="admin-card"><div class="admin-card-body"><h2 class="side-title"><i class="bi bi-shield-check"></i>Accès selon le rôle</h2><div class="role-title">Gestionnaire</div><p class="role-copy">Dashboard, validation des équipements sensibles et maintenance des salles.</p><div class="side-divider"></div><div class="role-title">Administrateur système</div><p class="role-copy">Accès gestionnaire, gestion des comptes et rôles, modification des règles métier.</p><span class="admin-lock-label" id="admin-only-label">Modification réservée à l’admin</span></div></section>
+      </aside>
+    </section>
+      </section>
+
+      <section id="panel-resources" class="admin-tab-panel admin-card d-none" role="tabpanel" aria-labelledby="tab-button-resources">
+        <div class="admin-card-body"><h2 class="admin-card-title">Salles &amp; Équipements</h2><p class="admin-card-subtitle">Consultez les ressources présentes dans les données BookEasy et leur disponibilité.</p>
+          <div class="be-table-wrap"><table class="table align-middle mb-0"><thead><tr><th>Type</th><th>Ressource</th><th>Campus</th><th>Détails</th><th>Disponibilité</th></tr></thead><tbody id="resources-rows"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="panel-accounts" class="admin-tab-panel admin-card d-none" role="tabpanel" aria-labelledby="tab-button-accounts">
+        <div class="admin-card-body"><h2 class="admin-card-title">Comptes &amp; Rôles</h2><p class="admin-card-subtitle">Comptes de démonstration chargés depuis les données du projet.</p>
+          <div class="be-table-wrap"><table class="table align-middle mb-0"><thead><tr><th>Utilisateur</th><th>E-mail</th><th>Campus</th><th>Rôle</th></tr></thead><tbody id="accounts-rows"></tbody></table></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="admin-card access-card d-none" id="access-card" aria-live="polite"><div class="admin-card-body">
+      <h2 class="admin-card-title mb-2" id="access-title">Connexion requise</h2><p class="side-copy" id="access-message">Connectez-vous avec un compte autorisé pour accéder à cette page.</p>
+      <form id="admin-login-form"><div class="mb-2"><label class="admin-field-label" for="admin-email">Adresse e-mail</label><input class="form-control form-control-sm" id="admin-email" type="email" autocomplete="username" required></div><div class="mb-2"><label class="admin-field-label" for="admin-password">Mot de passe</label><input class="form-control form-control-sm" id="admin-password" type="password" autocomplete="current-password" required></div><div class="form-error d-none" id="admin-login-error" role="alert"></div><button class="btn btn-primary btn-sm w-100 mt-3" type="submit">Se connecter</button></form>
+    </div></section>
+  </main>
+  <footer class="settings-footer"><div class="be-container settings-footer-inner"><span>© 2025 BookEasy · Les ressources du campus, simplement.</span><nav class="footer-links" aria-label="Liens de pied de page"><a href="#">Besoin d’aide ?</a><a href="#">Conditions de réservation</a><a href="#">Accessibilité</a></nav></div></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/rules.js"></script>
+  <script>
+    (() => {
+      const $ = id => document.getElementById(id);
+      const rolesAutorises = ["gestionnaire", "admin"];
+      const utilisateur = utilisateurCourant();
+      let currentSettings = null;
+      const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, character => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[character]));
+      const roleLabel = role => ({etudiant:"Étudiant",enseignant:"Enseignant",gestionnaire:"Gestionnaire",admin:"Administrateur"}[role] || role || "—");
+
+      document.querySelectorAll("[data-admin-tab]").forEach(button => {
+        button.addEventListener("click", () => {
+          const target = button.dataset.adminTab;
+          document.querySelectorAll("[data-admin-tab]").forEach(tab => {
+            const selected = tab === button;
+            tab.classList.toggle("active", selected);
+            tab.setAttribute("aria-selected", String(selected));
+            tab.tabIndex = selected ? 0 : -1;
+          });
+          document.querySelectorAll(".admin-tab-panel").forEach(panel => {
+            panel.classList.toggle("d-none", panel.id !== `panel-${target}`);
+          });
+        });
+      });
+
+      const settingsLink = document.querySelector('#navbar a[href="admin-settings.html"]');
+      if (settingsLink) settingsLink.parentElement.remove();
+      const dashboardLink = document.querySelector('#navbar a[href="admin-dashboard.html"]');
+      if (dashboardLink && utilisateur.role === "gestionnaire") {
+        dashboardLink.href = "dashboard-gestion.html";
+        dashboardLink.innerHTML = '<i class="bi bi-grid-1x2"></i>Dashboard Gestion';
+      }
+      if (dashboardLink && utilisateur.role === "admin") {
+        const gestionItem = document.createElement("li");
+        gestionItem.className = "nav-item";
+        gestionItem.innerHTML = '<a class="nav-link" href="dashboard-gestion.html"><i class="bi bi-grid-1x2"></i>Dashboard Gestion</a>';
+        dashboardLink.parentElement.after(gestionItem);
+      }
+
+      function showAccess() {
+        $("access-card").classList.remove("d-none");
+        const loginLink = document.querySelector('#navbar a[href="login.html"]');
+        if (loginLink) loginLink.href = "#access-card";
+        const manager = utilisateur.role === "gestionnaire";
+        $("access-title").textContent = manager ? "Accès réservé à l’administrateur" : "Connexion administrateur";
+        $("access-message").textContent = manager ? "Les règles métier sont consultables et modifiables par un administrateur système." : "Connectez-vous avec un compte gestionnaire ou administrateur.";
+        $("admin-login-form").classList.toggle("d-none", manager);
+        $("admin-login-form").addEventListener("submit", event => {
+          event.preventDefault();
+          if (!connecter($("admin-email").value, $("admin-password").value)) { $("admin-login-error").textContent="Adresse e-mail ou mot de passe incorrect."; $("admin-login-error").classList.remove("d-none"); return; }
+          if (utilisateurCourant().role !== "admin") { localStorage.removeItem("session"); $("admin-login-error").textContent="Cette page est réservée au rôle Administrateur."; $("admin-login-error").classList.remove("d-none"); return; }
+          location.reload();
+        });
+      }
+
+      async function loadSettings() {
+        try {
+          const [settings, rooms, equipment, users] = await Promise.all([chargerReglages(), chargerJSON("rooms"), chargerJSON("equipements"), chargerJSON("users")]);
+          currentSettings = settings;
+          $("quota").value = settings.quotaHebdoHeures;
+          $("anticipation").value = settings.anticipationJours;
+          $("duree-etudiant").value = settings.dureeMaxHeures.etudiant;
+          $("duree-enseignant").value = settings.dureeMaxHeures.enseignant;
+          $("checkin").value = settings.checkin.ouvertureAvantMinutes;
+          $("seuil-absences").value = settings.sanctions.seuilAbsences;
+          $("periode").value = settings.sanctions.periodeJours;
+          const campuses = [...new Set(rooms.map(room => room.campus))];
+          $("campus-list").innerHTML = campuses.map(campus => `<p class="campus-line"><i class="bi bi-geo-alt me-1"></i>Campus ${campus}</p>`).join("");
+          const resourceRows = [
+            ...rooms.map(room => ({type:"Salle", name:room.nom, campus:room.campus, details:`${room.type} · ${room.batiment}, étage ${room.etage} · ${room.capacite} places`, available:!room.bloquee})),
+            ...equipment.map(item => ({type:"Équipement", name:item.nom, campus:item.campus, details:item.categorie + (item.sensible ? " · Validation requise" : ""), available:item.disponible}))
+          ];
+          $("resources-rows").innerHTML = resourceRows.map(item => `<tr><td>${escapeHtml(item.type)}</td><td class="fw-semibold">${escapeHtml(item.name)}</td><td>${escapeHtml(item.campus)}</td><td>${escapeHtml(item.details)}</td><td><span class="be-badge ${item.available ? "be-status-active" : "be-status-annulee"}">${item.available ? "Disponible" : "Indisponible"}</span></td></tr>`).join("");
+          $("accounts-rows").innerHTML = users.map(user => `<tr><td class="fw-semibold">${escapeHtml(user.nom)}</td><td>${escapeHtml(user.email)}</td><td>${escapeHtml(user.campus)}</td><td>${escapeHtml(roleLabel(user.role))}</td></tr>`).join("");
+          $("sanction-warning").textContent = `Une suspension s’applique à partir de ${settings.sanctions.seuilAbsences} absences sur une période glissante de ${settings.sanctions.periodeJours} jours.`;
+          const isAdmin = utilisateur.role === "admin";
+          document.querySelectorAll("#admin-content input").forEach(input => { input.disabled = !isAdmin; });
+          $("save-settings").classList.toggle("d-none", !isAdmin);
+          $("save-settings").disabled = !isAdmin;
+          $("admin-only-label").classList.toggle("d-none", isAdmin);
+          if (!isAdmin) $("settings-source").textContent = "Consultation des règles · modification réservée à l’administrateur système.";
+        } catch (error) {
+          $("settings-error").textContent = `Impossible de charger les paramètres (${error.message}). Ouvrez BookEasy avec un serveur local.`;
+          $("settings-error").classList.remove("d-none");
+          console.error("Erreur de chargement des règles BookEasy :", error);
+        }
+      }
+
+      if (rolesAutorises.includes(utilisateur.role)) {
+        exigerRole(["gestionnaire", "admin"]);
+        $("admin-content").classList.remove("d-none");
+        loadSettings();
+      } else showAccess();
+
+      $("save-settings").addEventListener("click", () => {
+        const value = id => Number($(id).value);
+        const candidate = {
+          ...currentSettings,
+          quotaHebdoHeures:value("quota"), anticipationJours:value("anticipation"),
+          dureeMaxHeures:{...currentSettings.dureeMaxHeures, etudiant:value("duree-etudiant"), enseignant:value("duree-enseignant")},
+          checkin:{...currentSettings.checkin, ouvertureAvantMinutes:value("checkin")},
+          sanctions:{...currentSettings.sanctions, seuilAbsences:value("seuil-absences"), periodeJours:value("periode")}
+        };
+        if (Object.values([candidate.quotaHebdoHeures,candidate.anticipationJours,candidate.dureeMaxHeures.etudiant,candidate.dureeMaxHeures.enseignant,candidate.checkin.ouvertureAvantMinutes,candidate.sanctions.seuilAbsences,candidate.sanctions.periodeJours]).some(number=>!Number.isFinite(number)||number<0) || candidate.quotaHebdoHeures===0 || candidate.dureeMaxHeures.etudiant===0 || candidate.dureeMaxHeures.enseignant===0 || candidate.sanctions.seuilAbsences===0 || candidate.sanctions.periodeJours===0) {
+          $("settings-error").textContent="Vérifiez les valeurs : les durées et seuils doivent être positifs.";
+          $("settings-error").classList.remove("d-none"); return;
+        }
+        localStorage.setItem("settings", JSON.stringify(candidate));
+        currentSettings = candidate;
+        $("settings-error").classList.add("d-none");
+        $("sanction-warning").textContent=`Une suspension s’applique à partir de ${candidate.sanctions.seuilAbsences} absences sur une période glissante de ${candidate.sanctions.periodeJours} jours.`;
+        $("settings-source").textContent=`Modifié à ${new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})} · ${utilisateur.nom||"Administrateur"}`;
+        afficherToast("Les règles de réservation ont été enregistrées.");
+      });
+    })();
+  </script>
+</body>
+</html>
