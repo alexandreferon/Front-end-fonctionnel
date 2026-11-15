@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BookEasy · Réserver une salle</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/theme.css" rel="stylesheet">
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main class="be-container be-section">
+    <p class="be-small mb-2">Réservation de salles · Campus ECE</p>
+    <h1>Trouver et réserver une salle</h1>
+    <p class="be-muted">Filtrez par campus, capacité ou équipement, consultez l’état des salles en temps réel et réservez en quelques clics.</p>
+
+    <div class="d-flex gap-2 mb-4">
+      <div class="be-field flex-grow-1"><i class="bi bi-search"></i>
+        <input id="q" class="form-control" placeholder="Rechercher une salle, un bâtiment…" aria-label="Rechercher"></div>
+      <button class="btn btn-primary" id="btnRecherche">Rechercher</button>
+      <span class="be-badge align-self-center d-none d-md-inline-flex" id="compteur"></span>
+    </div>
+
+    <div class="row g-3">
+      <aside class="col-lg-3">
+        <div class="card"><div class="card-body">
+          <h3 class="mb-3">Filtres</h3>
+          <span class="form-label d-block">Type de salle</span>
+          <div class="d-grid gap-1 mb-3" id="types"></div>
+
+          <label class="form-label" for="campus">Campus</label>
+          <select id="campus" class="form-select mb-3"><option value="">Tous les campus</option></select>
+
+          <label class="form-label d-flex justify-content-between" for="cap">Capacité minimale <span class="be-small" id="capVal">0 place</span></label>
+          <input id="cap" type="range" class="form-range mb-3" min="0" max="40" step="2" value="0">
+
+          <span class="form-label d-block">Équipements</span>
+          <div class="mb-3">
+            <div class="form-check"><input class="form-check-input" type="checkbox" id="eqPrises" data-eq="prises"><label class="form-check-label" for="eqPrises">Prises</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" id="eqEcran" data-eq="écran"><label class="form-check-label" for="eqEcran">Écran</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" id="eqTableau" data-eq="tableau"><label class="form-check-label" for="eqTableau">Tableau</label></div>
+          </div>
+
+          <label class="form-label" for="dateDispo">Date souhaitée</label>
+          <input id="dateDispo" type="date" class="form-control mb-3">
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="maintenant">
+            <label class="form-check-label" for="maintenant">Disponible maintenant</label>
+          </div>
+          <button class="btn btn-primary w-100 mb-2" id="appliquer">Appliquer les filtres</button>
+          <button class="btn btn-link w-100" id="reinit">Réinitialiser</button>
+        </div></div>
+      </aside>
+
+      <section class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0 fs-5">Les salles du campus <span class="be-small" id="compteur2"></span></h2>
+          <div class="d-flex align-items-center gap-2"><label class="be-small" for="tri">Trier par</label>
+            <select id="tri" class="form-select form-select-sm w-auto"><option value="dispo">Disponibilité</option><option value="nom">Nom</option><option value="cap">Capacité</option></select></div>
+        </div>
+        <div class="row g-3" id="grille" aria-live="polite"></div>
+
+        <div class="card mt-4"><div class="card-body">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h2 class="mb-0 fs-5">Carte du campus</h2>
+            <div class="d-flex gap-2" id="campusMap"></div>
+          </div>
+          <div class="be-map" id="carte"></div>
+          <div class="d-flex flex-wrap gap-3 mt-3 be-small">
+            <span><i class="bi bi-check-circle" style="color:var(--be-teal-dark)"></i> Disponible</span>
+            <span><i class="bi bi-clock" style="color:var(--be-annulee)"></i> Occupée</span>
+            <span><i class="bi bi-slash-circle" style="color:var(--be-liberee)"></i> Bloquée</span>
+          </div>
+          <details class="mt-3"><summary class="be-small">Afficher la liste des salles de ce campus</summary><ul class="mt-2 mb-0" id="listeCarte"></ul></details>
+        </div></div>
+      </section>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <div class="modal fade" id="modalSalle" tabindex="-1" aria-labelledby="msTitre" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"><div class="modal-content">
+      <div class="modal-header"><h2 class="modal-title" id="msTitre"></h2><button class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button></div>
+      <div class="modal-body">
+        <div class="be-stepper mb-3 flex-wrap" id="stepper"></div>
+        <div id="pane"></div>
+      </div>
+      <div class="modal-footer" id="msPied"></div>
+    </div></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/rules.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    const pad = n => String(n).padStart(2, "0");
+    const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const parse = s => new Date(s + "T00:00");
+    const hm = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+    const minutes = t => +t.slice(0, 2) * 60 + +t.slice(3, 5);
+    const duree = min => `${Math.floor(min / 60)} h${min % 60 ? " " + pad(min % 60) : ""}`;
+
+    const ETATS = {
+      libre: { texte: "Disponible", icone: "bi-check-circle", couleur: "var(--be-teal-dark)" },
+      occupee: { texte: "Occupée", icone: "bi-clock", couleur: "var(--be-annulee)" },
+      bloquee: { texte: "Bloquée", icone: "bi-slash-circle", couleur: "var(--be-liberee)" }
+    };
+    const POSITIONS = {
+      "Eiffel|Bâtiment A": [24, 42], "Eiffel|Bâtiment B": [58, 30], "Eiffel|Bâtiment C": [76, 68],
+      "Lyon|Bâtiment 1": [30, 46], "Lyon|Bâtiment 2": [68, 52]
+    };
+    const EXTENSIONS = ["png", "jpeg", "webp", "JPG", "PNG", "JPEG"];
+
+    let salles = [], equipements = [], reservations = [], cfg, typeChoisi = "", campusCarte = "", S = {};
+    const modal = new bootstrap.Modal($("modalSalle"));
+
+    function essayer(img) {
+      const i = +img.dataset.i;
+      if (i < EXTENSIONS.length) { img.dataset.i = i + 1; img.src = img.src.replace(/\.\w+$/, "." + EXTENSIONS[i]); }
+      else img.remove();
+    }
+
+    function etat(s) {
+      if (s.bloquee) return "bloquee";
+      const n = new Date(), t = hm(n.getHours() * 60 + n.getMinutes()), auj = aujourdhui();
+      return reservations.some(r => r.ressourceType === "salle" && r.ressourceId === s.id && estActive(r) && r.date === auj && r.debut <= t && t < r.fin) ? "occupee" : "libre";
+    }
+    const ordre = s => ({ libre: 0, occupee: 1, bloquee: 2 })[etat(s)];
+    const pastille = e => `<span class="be-badge" style="color:${ETATS[e].couleur}"><i class="bi ${ETATS[e].icone}"></i>${ETATS[e].texte}</span>`;
+    const media = (s, extra = "") => `<div class="be-room-media d-flex align-items-center justify-content-center text-secondary" style="font-size:3rem">
+      <i class="bi bi-door-open"></i><img src="${s.image}" data-i="0" alt="Photo de ${s.nom}" style="position:absolute;inset:0" onerror="essayer(this)">${extra}</div>`;
+
+    function filtrer() {
+      const q = $("q").value.trim().toLowerCase(), campus = $("campus").value, cap = +$("cap").value, tri = $("tri").value;
+      const eq = [...document.querySelectorAll("[data-eq]:checked")].map(c => c.dataset.eq);
+      return salles.filter(s =>
+        (!typeChoisi || s.type === typeChoisi) && (!campus || s.campus === campus) && s.capacite >= cap &&
+        eq.every(e => s.equipements.includes(e)) && (!$("maintenant").checked || etat(s) === "libre") &&
+        (!q || [s.nom, s.campus, s.batiment, s.type].join(" ").toLowerCase().includes(q)))
+        .sort((a, b) => tri === "nom" ? a.nom.localeCompare(b.nom) : tri === "cap" ? b.capacite - a.capacite : ordre(a) - ordre(b) || a.nom.localeCompare(b.nom));
+    }
+
+    function afficher() {
+      const liste = filtrer(), types = [...new Set(salles.map(s => s.type))];
+      $("capVal").textContent = `${$("cap").value} place${+$("cap").value > 1 ? "s" : ""}`;
+      $("types").innerHTML = [["", "Toutes les salles"], ...types.map(t => [t, t])].map(([v, t]) =>
+        `<button class="be-chip text-start ${typeChoisi === v ? "active" : ""}" data-type="${v}">${t}</button>`).join("");
+      $("compteur").textContent = $("compteur2").textContent = `${liste.length} salle${liste.length > 1 ? "s" : ""}`;
+      $("grille").innerHTML = liste.length ? liste.map(s => {
+        const e = etat(s);
+        return `<div class="col-md-6 col-xl-4"><article class="card be-room-card">
+          ${media(s, pastille(e))}
+          <div class="be-room-body">
+            <span class="be-small text-uppercase">${s.type}</span><h3 class="mb-0">${s.nom}</h3>
+            <span class="be-small">Campus ${s.campus} · ${s.batiment}, étage ${s.etage}</span>
+            <span class="be-small"><i class="bi bi-people"></i> ${s.capacite} places</span>
+            <div class="d-flex flex-wrap gap-1 mt-1">${s.equipements.map(x => `<span class="be-badge">${x}</span>`).join("")}</div>
+            <div class="be-room-footer">
+              <button class="btn btn-outline-secondary btn-sm" data-fiche="${s.id}">Voir la fiche</button>
+              <button class="btn btn-primary btn-sm" data-resa="${s.id}" ${e === "bloquee" ? "disabled" : ""}>Réserver</button>
+            </div>
+          </div></article></div>`;
+      }).join("") : `<div class="col-12"><div class="card"><div class="card-body text-center be-muted">Aucune salle ne correspond à votre recherche. Élargissez vos filtres.</div></div></div>`;
+      afficherCarte();
+    }
+
+    function afficherCarte() {
+      const campus = [...new Set(salles.map(s => s.campus))];
+      if (!campusCarte) campusCarte = $("campus").value || campus[0];
+      $("campusMap").innerHTML = campus.map(c => `<button class="be-chip ${c === campusCarte ? "active" : ""}" data-campus="${c}">${c}</button>`).join("");
+      const duCampus = salles.filter(s => s.campus === campusCarte), batiments = [...new Set(duCampus.map(s => s.batiment))];
+      const pos = b => POSITIONS[`${campusCarte}|${b}`] || [20 + 30 * batiments.indexOf(b), 45];
+      $("carte").innerHTML = batiments.map(b => {
+        const [x, y] = pos(b);
+        return `<div style="position:absolute;left:${x}%;top:${y}%;width:30%;height:44%;transform:translate(-50%,-50%);background:#fff;border:1px solid var(--be-border);border-radius:10px">
+          <span class="be-small" style="position:absolute;top:6px;left:10px">${b}</span></div>`;
+      }).join("") + batiments.map(b => {
+        const [x, y] = pos(b);
+        return duCampus.filter(s => s.batiment === b).map((s, k) => {
+          const e = etat(s);
+          return `<button type="button" class="be-map-pin ${e}" style="left:${x}%;top:${y + 11 * k + 4}%;color:${ETATS[e].couleur}" data-fiche="${s.id}" aria-label="${s.nom}, ${ETATS[e].texte}">
+            <i class="bi ${ETATS[e].icone}"></i> ${s.nom}</button>`;
+        }).join("");
+      }).join("");
+      $("listeCarte").innerHTML = duCampus.map(s => `<li>${s.nom} (${s.batiment}) : ${ETATS[etat(s)].texte}</li>`).join("");
+    }
+
+    function ouvrir(id, etape) {
+      const salle = salles.find(s => s.id === id), date = $("dateDispo").value || null;
+      S = { salle, etape, dateEtat: "initial", date, sa: null, sb: null, ok: null, erreur: "", envoi: false,
+            eq: new Set(), mois: parse(date || aujourdhui()) };
+      S.mois = new Date(S.mois.getFullYear(), S.mois.getMonth(), 1);
+      rendre(); modal.show();
+    }
+
+    function demarrer(id) {
+      if (!estConnecte()) { location.href = "login.html"; return; }
+      ouvrir(id, "date");
+    }
+
+    function creneaux() {
+      const debut = minutes(cfg.ouverture.debut), fin = minutes(cfg.ouverture.fin), n = new Date(), maint = n.getHours() * 60 + n.getMinutes();
+      const pris = reservations.filter(r => r.ressourceType === "salle" && r.ressourceId === S.salle.id && r.date === S.date && estActive(r));
+      const liste = [];
+      for (let m = debut; m < fin; m += 30)
+        liste.push({ m, off: pris.some(r => minutes(r.debut) < m + 30 && minutes(r.fin) > m) || (S.date === aujourdhui() && m + 30 <= maint) });
+      return liste;
+    }
+
+    function calendrier(decalage) {
+      const base = new Date(S.mois.getFullYear(), S.mois.getMonth() + decalage, 1), auj = parse(aujourdhui());
+      const max = new Date(auj); max.setDate(max.getDate() + cfg.anticipationJours);
+      const premier = new Date(auj.getFullYear(), auj.getMonth(), 1), vide = (base.getDay() + 6) % 7;
+      const nb = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
+      let jours = "";
+      for (let i = 0; i < vide; i++) jours += "<span></span>";
+      for (let d = 1; d <= nb; d++) {
+        const x = new Date(base.getFullYear(), base.getMonth(), d), k = iso(x);
+        jours += `<button type="button" class="be-cal-day ${k === aujourdhui() ? "today" : ""} ${k === S.date ? "selected" : ""}" data-act="jour" data-d="${k}" aria-label="${formatDate(k)}" ${x < auj || x > max ? "disabled" : ""}>${d}</button>`;
+      }
+      const prec = decalage === 0 ? `<button type="button" class="btn btn-outline-secondary btn-sm" data-act="prec" aria-label="Mois précédent" ${S.mois <= premier ? "disabled" : ""}><i class="bi bi-chevron-left"></i></button>` : `<span></span>`;
+      const suiv = decalage === 1 ? `<button type="button" class="btn btn-outline-secondary btn-sm" data-act="suiv" aria-label="Mois suivant" ${new Date(S.mois.getFullYear(), S.mois.getMonth() + 2, 1) > max ? "disabled" : ""}><i class="bi bi-chevron-right"></i></button>` : `<span></span>`;
+      return `<div><div class="d-flex justify-content-between align-items-center mb-2">${prec}<strong class="text-dark text-capitalize">${base.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</strong>${suiv}</div>
+        <div class="be-cal-grid">${["L", "M", "M", "J", "V", "S", "D"].map(j => `<span class="be-small">${j}</span>`).join("")}${jours}</div></div>`;
+    }
+
+    function vueDate() {
+      const valide = S.dateEtat === "valide", ouvert = S.dateEtat === "ouvert";
+      const libelle = valide
+        ? `<i class="bi bi-check-circle text-success"></i><span class="text-dark fw-semibold">${formatDate(S.ok.date)} · ${S.ok.debut} – ${S.ok.fin}</span><span class="be-small">${duree(minutes(S.ok.fin) - minutes(S.ok.debut))}</span><span class="ms-auto be-small">Modifier</span>`
+        : `<i class="bi bi-calendar3"></i><span class="be-muted">Sélectionner une date et un créneau</span>`;
+      let html = `<span class="form-label d-block">Date et créneau</span>
+        <button type="button" class="form-control text-start d-flex align-items-center gap-2" data-act="ouvrirCal" aria-expanded="${ouvert}">${libelle}</button>
+        <p class="be-small mt-2 mb-0">Réservation possible de ${cfg.ouverture.debut} à ${cfg.ouverture.fin}, jusqu’à ${cfg.anticipationJours} jours à l’avance.</p>`;
+      if (!ouvert) return html;
+      const l = S.date ? creneaux() : [], fin = S.sb !== null ? S.sb : S.sa;
+      const resume = S.sb !== null ? `${hm(l[S.sa].m)} – ${hm(l[S.sb].m + 30)} · ${duree((S.sb - S.sa + 1) * 30)}`
+        : S.sa !== null ? `Début ${hm(l[S.sa].m)} : choisissez l’heure de fin` : "Aucun créneau sélectionné";
+      html += `<div class="be-popover mt-3">
+        <div class="d-flex flex-wrap gap-2 mb-3">${[["Aujourd’hui", 0], ["Demain", 1], [`Dans ${cfg.anticipationJours} jours`, cfg.anticipationJours]].map(([t, j]) =>
+          `<button type="button" class="be-chip" data-act="raccourci" data-j="${j}">${t}</button>`).join("")}</div>
+        <div class="be-calendars">${calendrier(0)}${calendrier(1)}</div>
+        <hr class="be-divider">
+        <div class="d-flex justify-content-between align-items-center mb-2"><h3 class="mb-0">Créneaux disponibles</h3><span class="be-small">${S.date ? formatDate(S.date) : ""}</span></div>
+        ${S.date ? `<div class="be-slots">${l.map((c, i) => `<button type="button" class="be-slot ${S.sa !== null && i >= S.sa && i <= fin ? "selected" : ""}" data-act="slot" data-i="${i}" ${c.off ? "disabled" : ""}>${hm(c.m)}</button>`).join("")}</div>
+          <p class="be-small mt-2 mb-0">Cliquez sur l’heure de début, puis sur la dernière demi-heure souhaitée.</p>`
+          : `<p class="be-small mb-0">Choisissez une date pour afficher les créneaux disponibles.</p>`}
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+          <span class="be-small">${resume}</span>
+          <div class="d-flex gap-2"><button type="button" class="btn btn-outline-secondary btn-sm" data-act="annulerCal">Annuler</button>
+          <button type="button" class="btn btn-primary btn-sm" data-act="valider" ${S.sb === null ? "disabled" : ""}>Valider</button></div>
+        </div></div>`;
+      return html;
+    }
+
+    function vueFiche() {
+      const s = S.salle, user = utilisateurCourant(), role = user && cfg.dureeMaxHeures[user.role] ? user.role : "etudiant";
+      return `<div class="row g-3">
+        <div class="col-md-6"><div class="card overflow-hidden">${media(s)}</div></div>
+        <div class="col-md-6">
+          <span class="be-small text-uppercase">${s.type}</span>
+          <div class="mb-2">${pastille(etat(s))}</div>
+          <dl class="mb-0">
+            <dt class="be-small fw-normal">Lieu</dt><dd class="text-dark fw-semibold">Campus ${s.campus} · ${s.batiment}, étage ${s.etage}</dd>
+            <dt class="be-small fw-normal">Capacité</dt><dd class="text-dark fw-semibold">${s.capacite} places</dd>
+            <dt class="be-small fw-normal">Équipements</dt><dd class="d-flex flex-wrap gap-1">${s.equipements.map(x => `<span class="be-badge be-badge-teal">${x}</span>`).join("")}</dd>
+          </dl>
+        </div></div>
+        <div class="be-alert mt-3"><i class="bi bi-info-circle"></i><div>Durée maximale ${cfg.dureeMaxHeures[role]} h par créneau, quota de ${cfg.quotaHebdoHeures} h par semaine. ${s.bloquee ? "Cette salle est bloquée et ne peut pas être réservée." : ""}</div></div>`;
+    }
+
+    function vueConfirm() {
+      const s = S.salle, o = S.ok, dispo = equipements.filter(e => e.disponible && e.campus === s.campus);
+      const choisis = dispo.filter(e => S.eq.has(e.id));
+      return `<div class="card"><div class="card-body">
+        <h3 class="mb-3">Récapitulatif de votre réservation</h3>
+        <dl class="row mb-0">
+          <dt class="col-sm-4 be-small fw-normal">Salle</dt><dd class="col-sm-8 text-dark fw-semibold">${s.nom}</dd>
+          <dt class="col-sm-4 be-small fw-normal">Lieu</dt><dd class="col-sm-8 text-dark fw-semibold">Campus ${s.campus} · ${s.batiment}, étage ${s.etage}</dd>
+          <dt class="col-sm-4 be-small fw-normal">Date</dt><dd class="col-sm-8 text-dark fw-semibold">${formatDate(o.date)}</dd>
+          <dt class="col-sm-4 be-small fw-normal">Créneau</dt><dd class="col-sm-8 text-dark fw-semibold">${o.debut} – ${o.fin} · ${duree(minutes(o.fin) - minutes(o.debut))}</dd>
+          <dt class="col-sm-4 be-small fw-normal">Équipement</dt><dd class="col-sm-8 text-dark fw-semibold mb-0">${choisis.length ? choisis.map(e => e.nom).join(", ") : "Aucun"}</dd>
+        </dl></div></div>
+        ${dispo.length ? `<div class="card mt-3"><div class="card-body">
+          <h3 class="mb-2">Ajouter du matériel (facultatif)</h3>
+          ${dispo.map(e => `<div class="form-check"><input class="form-check-input" type="checkbox" id="eq${e.id}" data-act="eq" data-id="${e.id}" ${S.eq.has(e.id) ? "checked" : ""}>
+            <label class="form-check-label" for="eq${e.id}">${e.nom}${e.sensible ? ' <span class="be-badge be-status-active"><i class="bi bi-shield-check"></i>Validation requise</span>' : ""}</label></div>`).join("")}
+        </div></div>` : ""}
+        <div class="be-alert mt-3"><i class="bi bi-qr-code"></i><div>Un QR Code de check-in sera généré. Le check-in ouvre ${cfg.checkin.ouvertureAvantMinutes} minutes avant le début ; sans check-in ${cfg.checkin.delaiAbsenceMinutes} minutes après le début, la salle est libérée.</div></div>
+        ${S.erreur ? `<div class="be-alert be-alert-danger mt-3" role="alert"><i class="bi bi-exclamation-circle"></i><div>${S.erreur}</div></div>` : ""}`;
+    }
+
+    function pied() {
+      const fermer = `<button class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>`;
+      if (S.etape === "fiche") return `${fermer}<button class="btn btn-primary" data-act="reserver" ${S.salle.bloquee ? "disabled" : ""}>Réserver cette salle</button>`;
+      const retour = `<button class="btn btn-outline-secondary" data-act="retour"><i class="bi bi-arrow-left"></i>Retour</button>`;
+      if (S.etape === "date") return `${retour}<button class="btn btn-primary" data-act="continuer" ${S.dateEtat === "valide" ? "" : "disabled"}>Continuer</button>`;
+      return `${retour}<button class="btn btn-primary" data-act="confirmer" ${S.envoi ? "disabled" : ""}><i class="bi bi-check-lg"></i>Confirmer la réservation</button>`;
+    }
+
+    function rendre() {
+      const actif = document.activeElement, d = actif && actif.dataset ? actif.dataset : {};
+      const n = { fiche: 1, date: 2, confirm: 3 }[S.etape];
+      $("msTitre").textContent = S.salle.nom;
+      $("stepper").innerHTML = ["Salle", "Date et créneau", "Confirmation"].map((t, i) =>
+        `<span class="be-step ${i + 1 < n ? "done" : i + 1 === n ? "active" : ""}"><span class="be-step-num">${i + 1 < n ? '<i class="bi bi-check"></i>' : i + 1}</span>${t}</span>${i < 2 ? '<i class="bi bi-chevron-right"></i>' : ""}`).join("");
+      $("pane").innerHTML = S.etape === "fiche" ? vueFiche() : S.etape === "date" ? vueDate() : vueConfirm();
+      $("msPied").innerHTML = pied();
+      if (d.act) {
+        const cible = document.querySelector(`#modalSalle [data-act="${d.act}"]${d.i !== undefined ? `[data-i="${d.i}"]` : ""}${d.d ? `[data-d="${d.d}"]` : ""}`);
+        if (cible && !cible.disabled) cible.focus();
+      }
+    }
+
+    function choisirCreneau(i) {
+      const l = creneaux();
+      if (S.sa === null || S.sb !== null || i < S.sa) { S.sa = i; S.sb = null; }
+      else if (l.slice(S.sa, i + 1).some(c => c.off)) { S.sa = i; S.sb = null; }
+      else S.sb = i;
+    }
+
+    function choisirDate(k) {
+      S.date = k; S.sa = S.sb = null;
+      const d = parse(k); S.mois = new Date(d.getFullYear(), d.getMonth(), 1);
+    }
+
+    async function confirmer() {
+      S.envoi = true; S.erreur = ""; rendre();
+      const user = utilisateurCourant(), o = S.ok, creneau = { date: o.date, debut: o.debut, fin: o.fin };
+      try {
+        const res = await ajouterReservation({ ressourceType: "salle", ressourceId: S.salle.id, ...creneau }, user);
+        if (!res.ok) { S.erreur = res.message; S.envoi = false; rendre(); return; }
+        for (const id of S.eq) {
+          const e = equipements.find(x => x.id === id);
+          const r = await ajouterReservation({ ressourceType: "equipement", ressourceId: id, ...creneau }, user, e.sensible);
+          if (!r.ok) {
+            reservations = await chargerReservations();
+            const salle = reservations.find(x => x.id === res.reservation.id);
+            if (salle) { salle.statut = "annulee"; sauverReservations(reservations); }
+            S.erreur = `${e.nom} : ${r.message} La salle n’a pas été réservée.`;
+            S.envoi = false; rendre(); return;
+          }
+        }
+        location.href = "mes-reservations.html?confirme=" + res.reservation.id;
+      } catch (err) { S.erreur = "La réservation n’a pas pu être enregistrée. Réessayez."; S.envoi = false; rendre(); }
+    }
+
+    const ACTIONS = {
+      reserver: () => { if (!estConnecte()) { location.href = "login.html"; return; } S.etape = "date"; },
+      retour: () => { S.etape = S.etape === "confirm" ? "date" : "fiche"; },
+      ouvrirCal: () => { S.dateEtat = "ouvert"; },
+      annulerCal: () => {
+        S.dateEtat = S.ok ? "valide" : "initial";
+        if (S.ok) { S.date = S.ok.date; S.sa = S.ok.sa; S.sb = S.ok.sb; } else { S.sa = S.sb = null; }
+      },
+      valider: () => {
+        const l = creneaux();
+        S.ok = { date: S.date, sa: S.sa, sb: S.sb, debut: hm(l[S.sa].m), fin: hm(l[S.sb].m + 30) };
+        S.dateEtat = "valide";
+      },
+      continuer: () => { S.etape = "confirm"; S.erreur = ""; },
+      prec: () => { S.mois = new Date(S.mois.getFullYear(), S.mois.getMonth() - 1, 1); },
+      suiv: () => { S.mois = new Date(S.mois.getFullYear(), S.mois.getMonth() + 1, 1); },
+      jour: b => choisirDate(b.dataset.d),
+      raccourci: b => { const d = parse(aujourdhui()); d.setDate(d.getDate() + +b.dataset.j); choisirDate(iso(d)); },
+      slot: b => choisirCreneau(+b.dataset.i),
+      eq: b => { const id = +b.dataset.id; S.eq.has(id) ? S.eq.delete(id) : S.eq.add(id); }
+    };
+
+    $("modalSalle").addEventListener("click", e => {
+      const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
+      if (b.dataset.act === "confirmer") { confirmer(); return; }
+      ACTIONS[b.dataset.act](b); rendre();
+    });
+
+    document.addEventListener("click", e => {
+      const fiche = e.target.closest("[data-fiche]"), resa = e.target.closest("[data-resa]"), type = e.target.closest("[data-type]"), campus = e.target.closest("[data-campus]");
+      if (fiche) ouvrir(+fiche.dataset.fiche, "fiche");
+      if (resa) demarrer(+resa.dataset.resa);
+      if (type) { typeChoisi = type.dataset.type; afficher(); }
+      if (campus) { campusCarte = campus.dataset.campus; afficherCarte(); }
+    });
+
+    ["btnRecherche", "appliquer"].forEach(id => $(id).addEventListener("click", afficher));
+    ["q", "cap", "tri", "maintenant"].forEach(id => $(id).addEventListener("input", afficher));
+    document.querySelectorAll("[data-eq]").forEach(c => c.addEventListener("change", afficher));
+    $("campus").addEventListener("change", () => { campusCarte = $("campus").value || campusCarte; afficher(); });
+    $("reinit").addEventListener("click", () => {
+      $("q").value = ""; $("campus").value = ""; $("cap").value = 0; $("dateDispo").value = ""; $("maintenant").checked = false;
+      document.querySelectorAll("[data-eq]").forEach(c => c.checked = false);
+      typeChoisi = ""; afficher();
+    });
+
+    (async () => {
+      try {
+        [salles, equipements, cfg] = await Promise.all([chargerJSON("rooms"), chargerJSON("equipements"), chargerReglages()]);
+        reservations = await chargerReservations();
+        $("cap").max = Math.max(...salles.map(s => s.capacite));
+        [...new Set(salles.map(s => s.campus))].forEach(c => $("campus").add(new Option(c, c)));
+        $("dateDispo").min = aujourdhui();
+        afficher();
+      } catch (e) {
+        $("grille").innerHTML = `<div class="col-12"><div class="be-alert be-alert-danger">Impossible de charger les données (${e.message}). Ouvrez le site avec Live Server.</div></div>`;
+      }
+    })();
+  </script>
+</body>
+</html>
